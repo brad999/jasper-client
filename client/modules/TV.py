@@ -21,7 +21,8 @@ def handle(text, mic, profile):
     """
     cec.init()
     tv = cec.Device(0)
-	
+
+    # !! add volume and mute functions	
     if 'on' in text.lower():
         tv.power_on()
         mic.say("TV powered on.")
