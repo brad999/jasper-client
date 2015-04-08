@@ -108,7 +108,9 @@ class Jasper(object):
             salutation = "How can I be of service?"
         self.mic.say(salutation)
 
-        conversation = Conversation("NIKITA", self.mic, self.config)
+        names = ['NIKITA','NIKKI']
+
+        conversation = Conversation(names, self.mic, self.config)
         conversation.handleForever()
 
 if __name__ == "__main__":
