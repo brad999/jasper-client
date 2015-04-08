@@ -1,13 +1,16 @@
 """
-Mood module
-Name: movie.py 
+Movie module
+
+Name:           movie.py 
 Description:    responds to the word "movie" 
                 recommends top rated movies to watch based on user input (home vs. theater, genre)
-Dependencies:    Plex DB for home recommendations
-                           (located at /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db)
-                 sqlite 3 installed
-                 Rotten Tomatoes API (requires key)
+Dependencies:   Plex DB for home recommendations
+                 (located at /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db)
+                sqlite 3 installed
+                Rotten Tomatoes API (requires key)
+Author:         Brad Ahlers (github - brad999) 
 """
+
 import random, urllib2, json, re, sqlite3, operator
 
 WORDS = ["MOVIE", "HOME", "THEATER", "COMEDY", "DRAMA", "ROMANTIC", "LOVE", "ROMANCE", "ACTION", "THRILLER", "SCARY", "MYSTERY", "CRIME", "FUNNY", "YES", "NO"]

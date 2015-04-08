@@ -1,6 +1,7 @@
 """
 Echo module
-Name: echo.py 
+
+Name:           echo.py 
 Description: 	Responds to echo, repeat, or say and echoes back what was said.
 		Taken from alexsiri7 via github
 Dependencies:	NONE

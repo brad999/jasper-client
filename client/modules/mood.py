@@ -1,12 +1,15 @@
 """
 Mood module
-Name: mood.py 
+
+Name:           mood.py 
 Description: 	responds to common ways of asking "How are you?" 
 		determines mood based on weather, stock market, and wording of top news stories
 Dependencies:	Weather Underground API (requires key)
 		USA Today API (requires key)
 		Google Finance API (no key required)
+Author:         Brad Ahlers (github - brad999)
 """
+
 import random, urllib2, json, re
 from client import jasperpath
 

@@ -1,9 +1,12 @@
 """
-Mood module
-Name: Shutdown.py 
-Description: 	Responds to "shutdown", shuts down system. Must run Jasper as root to work.
-Dependencies:	None
+Shutdown module
+
+Name:           Shutdown.py 
+Description: 	Responds to "shutdown", shuts down system
+Dependencies:	Must run Jasper as root
+Author:         Brad Ahlers (github - brad999)
 """
+
 import os, re
 
 WORDS = ["SHUTDOWN", "YES", "NO"]

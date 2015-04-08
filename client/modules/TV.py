@@ -1,10 +1,13 @@
 """
-Mood module
-Name: TV.py 
+TV module
+
+Name:           TV.py 
 Description: 	responds to common TV commands (turn up/down volume, change input, turn on/off, etc)
 Dependencies:	python-cec library
 		CEC compatible TV and controller (Raspberry Pi)
+Author:         Brad Ahlers (github - brad999)
 """
+
 import cec, re
 
 WORDS = ["VOLUME", "UP", "DOWN", "TV", "TELEVISION", "POWER", "ON", "OFF"]
