@@ -56,6 +56,10 @@ def handle(text, mic, profile):
                 if x[0] == ' '.join(words):
                     return x
 
+            #if only one result found in SQL, return it
+            if len(tempMovies) == 1:
+                return tempMovies
+
             #loop over titles searching for best match one word at a time
             found = 'false'
             counter = 1
