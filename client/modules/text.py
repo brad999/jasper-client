@@ -1,19 +1,18 @@
 """
-Mood module
-Name: text.py
-Description:     Sends text message to designated recipient. Responds to "text"
+Texting module
+Name:            text.py
+Description:     Sends text message to designated recipient. Responds to "text" or "tell"
 Dependencies:    Gmail, Contacts list
 Author:          Brad Ahlers (github - brad999)
 """
 import re, smtplib, yaml
-from client import jasperpath
+from client import jasperpath, app_utils
 
-WORDS = ["TEXT"]
-
+WORDS = ["TEXT", "TELL"]
 
 def handle(text, mic, profile):
     """
-        Responds to user-input, typically speech text, by telling a joke.
+        Responds to user-input, typically speech text.
 
         Arguments:
         text -- user-input, typically transcribed speech
@@ -21,13 +20,17 @@ def handle(text, mic, profile):
         profile -- contains information related to the user (e.g., phone number)
     """
 
-    #determine recipient name
-    # !! add "tell" command in addition to "text"
-    # !! add logic to determine name and message if not in initial command
-    x = re.search("text (\w+) (.*)",text, re.IGNORECASE)
-    name = x.group(1)
-    message = x.group(2)
-
+    #determine recipient name and message
+    if re.search("(text|tell) (\w+) (.*)",text, re.IGNORECASE):
+        x = re.search("(text|tell) (\w+) (.*)",text, re.IGNORECASE)
+        name = x.group(2)
+        message = x.group(3)
+    else: 
+        mic.say("Who would you like to text?")
+        name = mic.activeListen()
+        mic.say("What would you like to tell " + name + "?")
+        message = mic.activeListen()
+ 
     #check for recipient number in contacts.yml
     f = open(jasperpath.data('text','CONTACTS.yml'))
     contacts = yaml.safe_load(f)
@@ -36,24 +39,28 @@ def handle(text, mic, profile):
     if recipientNumber:
         #check for a message
         if message:
-            # !! move send to app_utils.py
-            # !! add logic to confirm message and recipient before sending
-            session = smtplib.SMTP('smtp.gmail.com', 587)
-            session.starttls()
-            session.login(str(profile['gmail_address']), str(profile['gmail_password']))
-            session.sendmail(str(profile['gmail_address']), recipientNumber, message.lower())
-            mic.say("Message has been sent to " + name + ".")
+            #format message properly
+            message = app_utils.convertPunctuation(message.lower())
+            #confirm message and recipient before sending
+            mic.say("Are you sure you would like to tell " + name + ", " + message + "?")
+            YorN = mic.activeListen()
+            if 'yes' in YorN.lower() or 'yea' in YorN.lower() or 'sure' in YorN.lower() or 'please' in YorN.lower():
+                #send text message
+                app_utils.sendTextMsg(profile,recipientNumber,message)
+                mic.say("Message has been sent to " + name + ".")
+            else:
+                mic.say("Message was not sent.")
         else:
-            mic.say("I'm sorry. I didn't get that message")
+            mic.say("I'm sorry. I didn't understand that message")
     else:
         mic.say("I'm sorry. I could not find " + name + " in my address book.")
 
 def isValid(text):
     """
-        Returns True if the input is related to TV.
+        Returns True if the input is related to texting. 
 
         Arguments:
         text -- user-input, typically transcribed speech
     """
-    return bool(re.search(r'\b(text)\b', text, re.IGNORECASE))
+    return bool(re.search(r'\b(text|tell)\b', text, re.IGNORECASE))
 

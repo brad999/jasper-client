@@ -65,3 +65,4 @@ target/
 
 # SublimeLinter config file
 .sublimelinterrc
+static/text/CONTACTS.yml

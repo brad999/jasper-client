@@ -27,6 +27,12 @@ def sendEmail(SUBJECT, BODY, TO, FROM, SENDER, PASSWORD, SMTP_SERVER):
     session.sendmail(SENDER, TO, msg.as_string())
     session.quit()
 
+def sendTextMsg(profile,recipientNumber,message):
+    session = smtplib.SMTP('smtp.gmail.com', 587)
+    session.starttls()
+    session.login(str(profile['gmail_address']), str(profile['gmail_password']))
+    session.sendmail(str(profile['gmail_address']), recipientNumber, message)
+    session.quit()
 
 def emailUser(profile, SUBJECT="", BODY=""):
     """
@@ -80,6 +86,21 @@ def emailUser(profile, SUBJECT="", BODY=""):
     except:
         return False
 
+def convertPunctuation(text):
+    #convert punctuation words to symbols
+    text = re.sub(' period','.',text,re.IGNORECASE)
+    text = re.sub(' question-mark','?',text,re.IGNORECASE)
+    text = re.sub(' question mark','?',text,re.IGNORECASE)
+    text = re.sub(' exclamation-point','!',text,re.IGNORECASE)
+    text = re.sub(' exclamation point','!',text,re.IGNORECASE)
+    # !! messaging doesn't like emoticons. will try to fix later
+    #text = re.sub('smiley face',':)',text,re.IGNORECASE)
+    #text = re.sub('happy face',':)',text,re.IGNORECASE)
+    #text = re.sub('sad face',':(',text,re.IGNORECASE)
+    #capitolize first word in sentence
+    text = re.split('([.!?] *)', text)
+    text = ''.join([i.capitalize() for i in text])
+    return text
 
 def getTimezone(profile):
     """
