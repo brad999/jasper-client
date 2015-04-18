@@ -9,12 +9,12 @@ Author:         Brad Ahlers (github - brad999)
 
 import os, re
 
-WORDS = ["SHUTDOWN", "YES", "NO"]
+WORDS = ["SHUTDOWN", "YES", "NO", "SHUT", "DOWN"]
 
 
 def handle(text, mic, profile):
     """
-        Responds to user-input, typically speech text, by telling a joke.
+        Responds to user-input, typically speech text.
 
         Arguments:
         text -- user-input, typically transcribed speech
@@ -36,9 +36,9 @@ def handle(text, mic, profile):
 
 def isValid(text):
     """
-        Returns True if the input is related to TV.
+        Returns True if the input is related to shutdown.
 
         Arguments:
         text -- user-input, typically transcribed speech
     """
-    return bool(re.search(r'\b(shutdown)\b', text, re.IGNORECASE))
+    return bool(re.search(r'\b(shutdown|shut down)\b', text, re.IGNORECASE))
