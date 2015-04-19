@@ -2,7 +2,7 @@
 Plex module
 Name:           plex.py
 Description:    responds to the word "plex"
-                controls plex client (play,pause,stop)
+                controls plex client (play,pause,stop,rewind)
 Dependencies:   Plex DB
                     (located at /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db)
                 active Plex client, client configured in profile.yaml
@@ -11,12 +11,12 @@ Author:         Brad Ahlers (github - brad999)
 
 import random, urllib2, json, re, sqlite3, operator
 
-WORDS = ["PLEX","PLAY","PAUSE","STOP","YES", "NO"]
+WORDS = ["PLEX","PLAY","PAUSE","STOP","YES", "NO", "REWIND"]
 
 
 def handle(text, mic, profile):
     """
-        Responds to user-input, typically speech text, by telling a joke.
+        Responds to user-input, typically speech text.
         Arguments:
         text -- user-input, typically transcribed speech
         mic -- used to interact with the user (for both input and output)
@@ -29,6 +29,8 @@ def handle(text, mic, profile):
             action = 'pause'
         elif 'stop' in text.lower():
             action = 'stop'
+        elif 'rewind' in text.lower():
+            action = 'rewind'
         else:
            # If this is the first attempt then ask again, else give up
             if frustrationCounter == 0:
@@ -41,10 +43,12 @@ def handle(text, mic, profile):
         return action, text
 
     def findMovie(words):
+        #parse the list of words to find a matching movie
+        #return the name of the movie and information required to play
         try:
             dbCon = sqlite3.connect('/home/pi/com.plexapp.plugins.library.db')
 
-            #select any movie titles that contain the first word of what was said after "play"
+            #select any movie titles that contain the first word
             sql = "SELECT title, id FROM metadata_items WHERE library_section_id=4 AND title LIKE \'%" + words[0] + "%\' ORDER BY title;"
             cur = dbCon.cursor()
             cur.execute(sql)
@@ -86,6 +90,7 @@ def handle(text, mic, profile):
             return 'error'
 
     def playMovie(movie):
+        # !! check if TV is connected and turn on if off
         #build URL
         URL = 'http://' + str(profile['PlexClients']["selfIP"]) + ':' + str(profile['PlexClients']["selfPort"]) + \
               '/player/playback/playMedia?key=%2Flibrary%2Fmetadata%2F' + str(movie[0][1]) + \
@@ -105,24 +110,39 @@ def handle(text, mic, profile):
         action = 'pause'
     elif 'stop' in text.lower():
         action = 'stop'
+    elif 'rewind' in text.lower():
+        action = 'rewind'
     else:
         mic.say("How would you like to control Plex? Please say play, pause, or stop.")
         action, text = determineAction(mic.activeListen(),frustrationCounter)
 
     if action == 'play':
-        #determine what user would like to play
-        #find anything said after "play"
-        x = re.search("play (.*)",text, re.IGNORECASE)
-        y = x.group(1)
-        words = y.split()
-        #parse the list of words to find a matching movie
-        #return the name of the movie and information required to play
-        movie = findMovie(words)
+        #determine if anything was said after play
+        if re.search("(play) (.*)",text, re.IGNORECASE):
+            x = re.search("(play) (.*)",text, re.IGNORECASE)
+            words = x.group(2)
+        #if nothing was said after play, prompt for movie name
+        else:
+            mic.say("What movie would you like to play?")
+            words = mic.activeListen()
+        #find movie in Plex database
+        movie = findMovie(words.split())
         #play movie if match is found, else notify
         if len(movie) == 1:
             #play the movie
             playMovie(movie)
-            mic.say("Now playing" + str(movie[0][0]) + "...")
+            #verify movie choice
+            mic.say("Would you like to play " + str(movie[0][0]) + "?")
+            YorN = mic.activeListen()
+            if 'yes' in YorN.lower() or 'yea' in YorN.lower() or 'sure' in YorN.lower():
+                mic.say("Now playing" + str(movie[0][0]) + "...")
+            else:
+                mic.say("Would you like me to try again or quit?")
+                choice = mic.activeListen()
+                if 'try' in choice.lower() or 'again' in choice.lower():
+                    handle('play', mic, profile)
+                else:
+                    mic.say("Alright, I'm giving up.")
         elif len(movie) == 0:
             mic.say("I'm sorry. I did not find any movie matching that name.")
         else:
@@ -138,6 +158,8 @@ def handle(text, mic, profile):
         # !! add ability to control multiple clients
         # !! add intelligence to know if something is actually playing
         urllib2.urlopen('http://' + str(profile['PlexClients']["selfIP"]) + ':' + str(profile['PlexClients']["selfPort"]) + '/player/playback/stop')
+    elif action == 'rewind':
+        urllib2.urlopen('http://' + str(profile['PlexClients']["selfIP"]) + ':' + str(profile['PlexClients']["selfPort"]) + '/player/playback/stepBack')
 
 def isValid(text):
     """
@@ -145,5 +167,4 @@ def isValid(text):
         Arguments:
         text -- user-input, typically transcribed speech
     """
-    return bool(re.search(r'\b(plex|play|pause|stop)\b', text, re.IGNORECASE))
-
+    return bool(re.search(r'\b(plex|play|pause|stop|rewind)\b', text, re.IGNORECASE))
