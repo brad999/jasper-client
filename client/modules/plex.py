@@ -10,6 +10,7 @@ Author:         Brad Ahlers (github - brad999)
 """
 
 import random, urllib2, json, re, sqlite3, operator
+from client import app_utils
 
 WORDS = ["PLEX","PLAY","PAUSE","STOP","YES", "NO", "REWIND"]
 
@@ -55,10 +56,14 @@ def handle(text, mic, profile):
 
             tempMovies = cur.fetchall()
 
+            #convert words to numbers before checking match
+            words = app_utils.convertNumberWords(' '.join(words).lower())
             #check for an exact match first
             for x in tempMovies:
-                if x[0] == ' '.join(words):
-                    return x
+                if x[0].lower() == words:
+                    it = iter(x)
+                    movie = zip(it,it)
+                    return movie
 
             #if only one result found in SQL, return it
             if len(tempMovies) == 1:

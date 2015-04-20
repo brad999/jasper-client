@@ -102,6 +102,21 @@ def convertPunctuation(text):
     text = ''.join([i.capitalize() for i in text])
     return text
 
+def convertNumberWords(text):
+    #convert number words to numeric form
+    text = re.sub('zero','0',text,re.IGNORECASE)
+    text = re.sub('one','1',text,re.IGNORECASE)
+    text = re.sub('two','2',text,re.IGNORECASE)
+    text = re.sub('three','3',text,re.IGNORECASE)
+    text = re.sub('four','4',text,re.IGNORECASE)
+    text = re.sub('five','5',text,re.IGNORECASE)
+    text = re.sub('six','6',text,re.IGNORECASE)
+    text = re.sub('seven','7',text,re.IGNORECASE)
+    text = re.sub('eight','8',text,re.IGNORECASE)
+    text = re.sub('nine','9',text,re.IGNORECASE)
+    text = re.sub('ten','10',text,re.IGNORECASE)
+    return text
+
 def getTimezone(profile):
     """
     Returns the pytz timezone for a given profile.
