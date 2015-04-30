@@ -34,6 +34,9 @@ def sendTextMsg(profile,recipientNumber,message):
     session.sendmail(str(profile['gmail_address']), recipientNumber, message)
     session.quit()
 
+def YesOrNo(text):
+    return bool('ye' in text.lower() or 'sure' in text.lower() or 'please' in text.lower() or 'correct' in text.lower())
+
 def emailUser(profile, SUBJECT="", BODY=""):
     """
     sends an email.

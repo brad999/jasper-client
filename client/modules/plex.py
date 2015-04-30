@@ -1,7 +1,7 @@
 """
 Plex module
 Name:           plex.py
-Description:    responds to the word "plex"
+Description:    responds to the words "plex", "play", "pause", "stop", and "rewind"
                 controls plex client (play,pause,stop,rewind)
 Dependencies:   Plex DB
                     (located at /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db)
@@ -138,8 +138,7 @@ def handle(text, mic, profile):
             playMovie(movie)
             #verify movie choice
             mic.say("Would you like to play " + str(movie[0][0]) + "?")
-            YorN = mic.activeListen()
-            if 'yes' in YorN.lower() or 'yea' in YorN.lower() or 'sure' in YorN.lower():
+            if app_utils.YesOrNo(mic.activeListen()):
                 mic.say("Now playing" + str(movie[0][0]) + "...")
             else:
                 mic.say("Would you like me to try again or quit?")
@@ -168,7 +167,7 @@ def handle(text, mic, profile):
 
 def isValid(text):
     """
-        Returns True if the input is related to movie.
+        Returns True if the input is related to plex.
         Arguments:
         text -- user-input, typically transcribed speech
     """

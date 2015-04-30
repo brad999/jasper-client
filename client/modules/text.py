@@ -21,16 +21,17 @@ def handle(text, mic, profile):
     """
 
     #determine recipient name and message
+    # !! add logic to check if name was provided but no message
     if re.search("(text|tell) (\w+) (.*)",text, re.IGNORECASE):
         x = re.search("(text|tell) (\w+) (.*)",text, re.IGNORECASE)
         name = x.group(2)
         message = x.group(3)
-    else: 
+    else:
         mic.say("Who would you like to text?")
         name = mic.activeListen()
         mic.say("What would you like to tell " + name + "?")
         message = mic.activeListen()
- 
+
     #check for recipient number in contacts.yml
     f = open(jasperpath.data('text','CONTACTS.yml'))
     contacts = yaml.safe_load(f)
@@ -43,8 +44,7 @@ def handle(text, mic, profile):
             message = app_utils.convertPunctuation(message.lower())
             #confirm message and recipient before sending
             mic.say("Are you sure you would like to tell " + name + ", " + message + "?")
-            YorN = mic.activeListen()
-            if 'yes' in YorN.lower() or 'yea' in YorN.lower() or 'sure' in YorN.lower() or 'please' in YorN.lower():
+            if app_utils.YesOrNo(mic.activeListen()):
                 #send text message
                 app_utils.sendTextMsg(profile,recipientNumber,message)
                 mic.say("Message has been sent to " + name + ".")
@@ -57,10 +57,9 @@ def handle(text, mic, profile):
 
 def isValid(text):
     """
-        Returns True if the input is related to texting. 
+        Returns True if the input is related to texting.
 
         Arguments:
         text -- user-input, typically transcribed speech
     """
     return bool(re.search(r'\b(text|tell)\b', text, re.IGNORECASE))
-
