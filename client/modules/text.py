@@ -62,4 +62,4 @@ def isValid(text):
         Arguments:
         text -- user-input, typically transcribed speech
     """
-    return bool(re.search(r'\b(text|tell)\b', text, re.IGNORECASE))
+    return bool(re.search(r'\b(text|tell(?!me))\b', text, re.IGNORECASE))

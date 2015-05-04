@@ -15,6 +15,10 @@ from client import jasperpath
 
 WORDS = ["HOW", "ARE", "YOU", "TODAY", "IS", "IT", "GOING", "HOW\'S"]
 
+# specific statement so can be checked before most all modules
+# must be before nikita_module in priority
+PRIORITY = 5
+
 def getWeather(profile):
     """
     Gets weather conditions using Weather Underground API and returns rating on a 1-5 scale (1 being the best)
