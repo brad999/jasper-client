@@ -259,4 +259,5 @@ class Mic:
             OPTIONS=" -vdefault+m3 -p 40 -s 160 --stdout > say.wav"):
         # alter phrase before speaking
         phrase = alteration.clean(phrase)
+        self._logger.info('Returned: %r', phrase)
         self.speaker.say(phrase)
