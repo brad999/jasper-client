@@ -83,7 +83,7 @@ def emailUser(profile, SUBJECT="", BODY=""):
             password = profile['gmail_password']
             server = 'smtp.gmail.com'
         sendEmail(SUBJECT, BODY, recipient, user,
-                  "Jasper <jasper>", password, server)
+                  "Jasper <nikita>", password, server)
 
         return True
     except:

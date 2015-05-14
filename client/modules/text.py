@@ -6,7 +6,7 @@ Dependencies:    Gmail, Contacts list
 Author:          Brad Ahlers (github - brad999)
 """
 import re, smtplib, yaml
-from client import jasperpath, app_utils
+from client import nikitapath, app_utils
 
 WORDS = ["TEXT", "TELL"]
 
@@ -33,7 +33,7 @@ def handle(text, mic, profile):
         message = mic.activeListen()
 
     #check for recipient number in contacts.yml
-    f = open(jasperpath.data('text','CONTACTS.yml'))
+    f = open(nikitapath.data('text','CONTACTS.yml'))
     contacts = yaml.safe_load(f)
     recipientNumber = str(contacts[name.lower()])
     f.close()

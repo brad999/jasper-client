@@ -11,7 +11,7 @@ Author:         Brad Ahlers (github - brad999)
 """
 
 import random, urllib2, json, re
-from client import jasperpath
+from client import nikitapath
 
 WORDS = ["HOW", "ARE", "YOU", "TODAY", "IS", "IT", "GOING", "HOW\'S"]
 

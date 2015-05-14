@@ -2,7 +2,7 @@
 # -*- coding: utf-8-*-
 import unittest
 import imp
-from client import stt, jasperpath
+from client import stt, nikitapath
 
 
 def cmuclmtk_installed():
@@ -28,8 +28,8 @@ def pocketsphinx_installed():
 class TestSTT(unittest.TestCase):
 
     def setUp(self):
-        self.jasper_clip = jasperpath.data('audio', 'jasper.wav')
-        self.time_clip = jasperpath.data('audio', 'time.wav')
+        self.nikita_clip = nikitapath.data('audio', 'nikita.wav')
+        self.time_clip = nikitapath.data('audio', 'time.wav')
 
         self.passive_stt_engine = stt.PocketSphinxSTT.get_passive_instance()
         self.active_stt_engine = stt.PocketSphinxSTT.get_active_instance()
@@ -38,9 +38,9 @@ class TestSTT(unittest.TestCase):
         """
         Does Jasper recognize his name (i.e., passive listen)?
         """
-        with open(self.jasper_clip, mode="rb") as f:
+        with open(self.nikita_clip, mode="rb") as f:
             transcription = self.passive_stt_engine.transcribe(f)
-        self.assertIn("JASPER", transcription)
+        self.assertIn("NIKITA", transcription)
 
     def testTranscribe(self):
         """

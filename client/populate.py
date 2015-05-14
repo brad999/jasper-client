@@ -5,7 +5,7 @@ from getpass import getpass
 import yaml
 from pytz import timezone
 import feedparser
-import jasperpath
+import nikitapath
 
 
 def run():
@@ -30,7 +30,7 @@ def run():
     print("\nJasper uses your Gmail to send notifications. Alternatively, " +
           "you can skip this step (or just fill in the email address if you " +
           "want to receive email notifications) and setup a Mailgun " +
-          "account, as at http://jasperproject.github.io/documentation/" +
+          "account, as at http://nikitaproject.github.io/documentation/" +
           "software/#mailgun.\n")
     simple_request('gmail_address', 'Gmail address')
     profile['gmail_password'] = getpass()
@@ -125,9 +125,9 @@ def run():
 
     # write to profile
     print("Writing to profile...")
-    if not os.path.exists(jasperpath.CONFIG_PATH):
-        os.makedirs(jasperpath.CONFIG_PATH)
-    outputFile = open(jasperpath.config("profile.yml"), "w")
+    if not os.path.exists(nikitapath.CONFIG_PATH):
+        os.makedirs(nikitapath.CONFIG_PATH)
+    outputFile = open(nikitapath.config("profile.yml"), "w")
     yaml.dump(profile, outputFile, default_flow_style=False)
     print("Done.")
 

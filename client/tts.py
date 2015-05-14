@@ -29,7 +29,7 @@ except ImportError:
     pass
 
 import diagnose
-import jasperpath
+import nikitapath
 
 
 class AbstractTTSEngine(object):
@@ -62,7 +62,7 @@ class AbstractTTSEngine(object):
 
     def play(self, filename):
         # FIXME: Use platform-independent audio-output here
-        # See issue jasperproject/jasper-client#188
+        # See issue nikitaproject/nikita-client#188
         cmd = ['aplay', '-D', 'hw:1,0', str(filename)]
         self._logger.debug('Executing %s', ' '.join([pipes.quote(arg)
                                                      for arg in cmd]))
@@ -140,7 +140,7 @@ class EspeakTTS(AbstractTTSEngine):
         config = {}
         # HMM dir
         # Try to get hmm_dir from config
-        profile_path = jasperpath.config('profile.yml')
+        profile_path = nikitapath.config('profile.yml')
         if os.path.exists(profile_path):
             with open(profile_path, 'r') as f:
                 profile = yaml.safe_load(f)
@@ -262,7 +262,7 @@ class FliteTTS(AbstractTTSEngine):
         config = {}
         # HMM dir
         # Try to get hmm_dir from config
-        profile_path = jasperpath.config('profile.yml')
+        profile_path = nikitapath.config('profile.yml')
         if os.path.exists(profile_path):
             with open(profile_path, 'r') as f:
                 profile = yaml.safe_load(f)
@@ -359,7 +359,7 @@ class PicoTTS(AbstractTTSEngine):
         config = {}
         # HMM dir
         # Try to get hmm_dir from config
-        profile_path = jasperpath.config('profile.yml')
+        profile_path = nikitapath.config('profile.yml')
         if os.path.exists(profile_path):
             with open(profile_path, 'r') as f:
                 profile = yaml.safe_load(f)
@@ -431,7 +431,7 @@ class GoogleTTS(AbstractMp3TTSEngine):
         config = {}
         # HMM dir
         # Try to get hmm_dir from config
-        profile_path = jasperpath.config('profile.yml')
+        profile_path = nikitapath.config('profile.yml')
         if os.path.exists(profile_path):
             with open(profile_path, 'r') as f:
                 profile = yaml.safe_load(f)
@@ -508,7 +508,7 @@ class MaryTTS(AbstractTTSEngine):
         config = {}
         # HMM dir
         # Try to get hmm_dir from config
-        profile_path = jasperpath.config('profile.yml')
+        profile_path = nikitapath.config('profile.yml')
         if os.path.exists(profile_path):
             with open(profile_path, 'r') as f:
                 profile = yaml.safe_load(f)

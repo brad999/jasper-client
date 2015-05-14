@@ -17,7 +17,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 import yaml
 
 import brain
-import jasperpath
+import nikitapath
 
 from g2p import PhonetisaurusG2P
 try:
@@ -416,12 +416,12 @@ class JuliusVocabulary(AbstractVocabulary):
         return word_defs
 
     def _compile_vocabulary(self, phrases):
-        prefix = 'jasper'
+        prefix = 'nikita'
         tmpdir = tempfile.mkdtemp()
 
-        lexicon_file = jasperpath.data('julius-stt', 'VoxForge.tgz')
+        lexicon_file = nikitapath.data('julius-stt', 'VoxForge.tgz')
         lexicon_archive_member = 'VoxForge/VoxForgeDict'
-        profile_path = jasperpath.config('profile.yml')
+        profile_path = nikitapath.config('profile.yml')
         if os.path.exists(profile_path):
             with open(profile_path, 'r') as f:
                 profile = yaml.safe_load(f)
@@ -491,14 +491,14 @@ def get_phrases_from_module(module):
 
 def get_keyword_phrases():
     """
-    Gets the keyword phrases from the keywords file in the jasper data dir.
+    Gets the keyword phrases from the keywords file in the nikita data dir.
 
     Returns:
         A list of keyword phrases.
     """
     phrases = []
 
-    with open(jasperpath.data('keyword_phrases'), mode="r") as f:
+    with open(nikitapath.data('keyword_phrases'), mode="r") as f:
         for line in f:
             phrase = line.strip()
             if phrase:

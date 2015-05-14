@@ -13,7 +13,7 @@ class Mic:
         return
 
     def passiveListen(self, PERSONA):
-        return True, "JASPER"
+        return True, "NIKITA"
 
     def activeListenToAllOptions(self, THRESHOLD=None, LISTEN=True,
                                  MUSIC=False):
@@ -29,4 +29,4 @@ class Mic:
         return input
 
     def say(self, phrase, OPTIONS=None):
-        print("JASPER: %s" % phrase)
+        print("NIKITA: %s" % phrase)
