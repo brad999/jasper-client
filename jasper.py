@@ -23,6 +23,7 @@ parser.add_argument('--no-network-check', action='store_true',
 parser.add_argument('--diagnose', action='store_true',
                     help='Run diagnose and exit')
 parser.add_argument('--debug', action='store_true', help='Show debug messages')
+parser.add_argument('--test', action='store_true', help='Display messages instead of logging')
 args = parser.parse_args()
 
 if args.local:
@@ -79,6 +80,14 @@ class Jasper(object):
             self._logger.error("Can't open config file: '%s'", new_configfile)
             raise
 
+        # Reset the log level to what is configured in the profile
+        try:
+            logLevel = self.config['logging']
+        except KeyError:
+            logLevel = 'TRANSCRIPT'
+        if not args.debug:
+            logger.setLevel(logLevel)
+
         try:
             stt_engine_slug = self.config['stt_engine']
         except KeyError:
@@ -118,16 +127,27 @@ class Jasper(object):
         conversation.handleForever()
 
 if __name__ == "__main__":
+    """
+        Nikita client/server edition
+    """
 
-    print("*******************************************************")
-    print("*             JASPER - THE TALKING COMPUTER           *")
-    print("* (c) 2015 Shubhro Saha, Charlie Marsh & Jan Holthuis *")
-    print("*******************************************************")
+    #add new log level to logger for transcripts
+    #transcript is between 'WARNING' and 'INFO'
+    TRANS_LVL = 25
+    logging.addLevelName(TRANS_LVL, "TRANSCRIPT")
+    def transcript(self, message, *args, **kws):
+        self._log(TRANS_LVL, message, args, **kws)
+    logging.Logger.transcript = transcript
 
-    logging.basicConfig()
+    if args.test:
+        print("**********************************************")
+        print("*       NIKITA - Client/Server Edition       *")
+        print("*                Test Mode                   *")
+        print("**********************************************")
+        logging.basicConfig()
+    else:
+        logging.basicConfig(filename='/var/log/nikita/nikita.log', filemode='w', maxBytes='1024', backupCount='5')
     logger = logging.getLogger()
-    logger.getChild("client.stt").setLevel(logging.INFO)
-    logger.getChild("client.mic").setLevel(logging.INFO)
 
     if args.debug:
         logger.setLevel(logging.DEBUG)

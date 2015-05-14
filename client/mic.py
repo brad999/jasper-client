@@ -148,7 +148,7 @@ class Mic:
 
         # no use continuing if no flag raised
         if not didDetect:
-            print "No disturbance detected"
+            self._logger.debug('No distrubance detected')
             stream.stop_stream()
             stream.close()
             return (None, None)
@@ -259,5 +259,5 @@ class Mic:
             OPTIONS=" -vdefault+m3 -p 40 -s 160 --stdout > say.wav"):
         # alter phrase before speaking
         phrase = alteration.clean(phrase)
-        self._logger.info('Returned: %r', phrase)
+        self._logger.transcript('Returned: %r', phrase)
         self.speaker.say(phrase)

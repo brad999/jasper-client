@@ -170,7 +170,7 @@ class PocketSphinxSTT(AbstractSTTEngine):
             f.truncate()
 
         transcribed = [result[0]]
-        self._logger.info('Transcribed: %r', transcribed)
+        self._logger.transcript('Transcribed: %r', transcribed)
         return transcribed
 
     @classmethod
