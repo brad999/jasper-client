@@ -56,6 +56,9 @@ def getStock():
     obj = json.loads(content[3:])
     quotePercent = obj[0]['cp']
 
+    if quotePercent == '':
+        quotePercent = 0
+
     if -5.01 >= float(quotePercent) >= -100.00:
         stock = 5
     elif -0.60 >= float(quotePercent) >= -5.00:
