@@ -28,7 +28,7 @@ def handle(text, mic, profile):
     except facebook.GraphAPIError:
         mic.say("I have not been authorized to query your Facebook. If you " +
                 "would like to check birthdays in the future, please visit " +
-                "the Jasper dashboard.")
+                "the Nikita dashboard.")
         return
     except:
         mic.say(

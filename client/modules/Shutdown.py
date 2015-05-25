@@ -1,9 +1,9 @@
 """
 Shutdown module
 
-Name:           Shutdown.py 
+Name:           Shutdown.py
 Description: 	Responds to "shutdown", shuts down system
-Dependencies:	Must run Jasper as root
+Dependencies:	Must run Nikita as root
 Author:         Brad Ahlers (github - brad999)
 """
 
@@ -30,7 +30,7 @@ def handle(text, mic, profile):
             os.system("shutdown -h now")
         else:
             mic.say("I did not get that so I will stay alive.")
- 
+
     mic.say("Are you sure you want me to die?")
     handleResponse(mic.activeListen())
 

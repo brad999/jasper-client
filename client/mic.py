@@ -22,9 +22,9 @@ class Mic:
 
         Arguments:
         speaker -- handles platform-independent audio output
-        passive_stt_engine -- performs STT while Jasper is in passive listen
+        passive_stt_engine -- performs STT while Nikita is in passive listen
                               mode
-        acive_stt_engine -- performs STT while Jasper is in active listen mode
+        acive_stt_engine -- performs STT while Nikita is in active listen mode
         """
         self._logger = logging.getLogger(__name__)
         self.speaker = speaker

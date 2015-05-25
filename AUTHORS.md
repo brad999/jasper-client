@@ -1,3 +1,7 @@
+Nikita is a version of the Jasper project that is has been modified by Brad Ahlers.
+Authors of the original Jasper project are listed below.
+
+
 Jasper was originally created by Shubhro Saha and Charles Marsh in early 2014.
 In August 2014, the core development team has been joined by Jan Holthuis.
 
