@@ -51,10 +51,10 @@ def handle(text, mic, profile):
            # If this is the first attempt then ask again, else system picks genre
            # !! add any genre option and make it default
             if frustrationCounter == 0:
-                mic.say("I'm sorry. I don't understand the type of movie you're looking for. Please say a genre such as comedy, action, romance, et cetera.")
+                mic.say('A',"I'm sorry. I don't understand the type of movie you're looking for. Please say a genre such as comedy, action, romance, et cetera.")
                 genre = movieGenre(mic.activeListen(), 1)
             else:
-                mic.say("I'm sorry. I can't find the genre you're inquiring about. I'm going to pick a genre for you.")
+                mic.say('A',"I'm sorry. I can't find the genre you're inquiring about. I'm going to pick a genre for you.")
                 genre = 'comedy' #default to comedy, random currently not working str(random.choice(genreOptions))
 
         return genre
@@ -69,11 +69,11 @@ def handle(text, mic, profile):
             location = 'theater'
         else:
             if frustrationCounter == 0:
-                mic.say("I didn't catch that. Do you want to find a movie to watch at home or at the movie theater?")
+                mic.say('A',"I didn't catch that. Do you want to find a movie to watch at home or at the movie theater?")
                 location = whereToWatch(mic.activeListen(), 1)
             # If this is the first attempt then ask again, else assume movie will be watched at home
             else:
-                mic.say("I'm sorry. We seem to be having trouble getting on the same page. I'm going to assume you're looking for a movie to watch at home.")
+                mic.say('A',"I'm sorry. We seem to be having trouble getting on the same page. I'm going to assume you're looking for a movie to watch at home.")
                 location = 'home'
 
         return location
@@ -116,36 +116,36 @@ def handle(text, mic, profile):
 
     #First determine whether to find a movie to watch at home (Plex) or at the movie theater
     frustrationCounter = 0
-    mic.say("Are you looking for a movie to watch at home or at the theater?")
+    mic.say('A',"Are you looking for a movie to watch at home or at the theater?")
     location = whereToWatch(mic.activeListen(), frustrationCounter)
 
     if location == 'home':
         #Determine movie genre
         frustrationCounter = 0
-        mic.say("What type of movie would you like to watch?")
+        mic.say('A',"What type of movie would you like to watch?")
         genre = movieGenre(mic.activeListen(), frustrationCounter)
 
         selections = queryPlex(genre)
         if selections == 'error':
-            mic.say("I'm sorry the Plex server is currenty unavailable. Please try again later.")
+            mic.say('A',"I'm sorry the Plex server is currenty unavailable. Please try again later.")
         else:
-            mic.say("I recommend either " + selections[0] + ", " + selections[1] + ", or " + selections[2] + ". Do any of these sound good?")
+            mic.say('I',"I recommend either " + selections[0] + ", " + selections[1] + ", or " + selections[2] + ". Do any of these sound good?")
             if app_utils.YesOrNo(mic.activeListen()):
-                mic.say("Happy to be of help. Enjoy your movie!")
+                mic.say('A',"Happy to be of help. Enjoy your movie!")
             else:
                 selections = queryPlex(genre)
-                mic.say("I think " + selections[0] + ", " + selections[1] + ", or " + selections[2] + " would also be good. I hope this was helpful.")
+                mic.say('I',"I think " + selections[0] + ", " + selections[1] + ", or " + selections[2] + " would also be good. I hope this was helpful.")
 
     elif location == 'theater':
         highestRated, recentRelease = queryTheater()
         words = "The top three rated movies currently showing in theaters are " + highestRated[0][0] + ", " + highestRated[1][0] + ", and " + highestRated[2][0] + ". The most recently released movies are " + recentRelease[0][0] + ", " + recentRelease[1][0] + ", and " + recentRelease[2][0] + "."
-        mic.say(words)
-        mic.say("Would you like me to repeat those listings?")
+        mic.say('A',words)
+        mic.say('A',"Would you like me to repeat those listings?")
         if app_utils.YesOrNo(mic.activeListen()):
-            mic.say("OK, try to pay attention this time.")
-            mic.say(words + "Enjoy the show!")
+            mic.say('A',"OK, try to pay attention this time.")
+            mic.say('A',words + "Enjoy the show!")
         else:
-            mic.say("OK, enjoy the show!")
+            mic.say('A',"OK, enjoy the show!")
 
 def isValid(text):
     """

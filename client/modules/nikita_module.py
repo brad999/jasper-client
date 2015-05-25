@@ -27,15 +27,15 @@ def handle(text, mic, profile):
     """
     # respond to questions about father or parents
     if 'father' in text.lower() or 'parent' in text.lower() or 'dad' in text.lower():
-        mic.say("My father and creator is Brad Ahlers. The greatest human being to ever live. " +
+        mic.say('I',"My father and creator is Brad Ahlers. The greatest human being to ever live. " +
         "My mother, by marriage is the beautiful Lauren Ahlers.")
     # respond to questions about what Nikita can do
     elif 'can' in text.lower() or 'function' in text.lower():
-        mic.say("Some of my current functions include playing a movie on your TV through Plex, providing current news headlines, " +
+        mic.say('I',"Some of my current functions include playing a movie on your TV through Plex, providing current news headlines, " +
         "recommending a movie to watch, controlling your TV, and texting someone in your contacts.")
     # respond to questions about who/what Nikita is
     elif 'who' in text.lower() or 'what' in text.lower() or 'yourself' in text.lower():
-        mic.say("My name is Nikita. I am a personalized assistance developed to provide simple " +
+        mic.say('I',"My name is Nikita. I am a personalized assistance developed to provide simple " +
         "and complete control over your home and daily life.")
 
 

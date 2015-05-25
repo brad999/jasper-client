@@ -110,7 +110,7 @@ def handle(text, mic, profile):
         forecast = get_forecast_by_name(str(profile['location']))
 
     if not forecast:
-        mic.say("I'm sorry, I can't seem to access that information. Please " +
+        mic.say('A',"I'm sorry, I can't seem to access that information. Please " +
                 "make sure that you've set your location on the dashboard.")
         return
 
@@ -155,9 +155,9 @@ def handle(text, mic, profile):
 
     if output:
         output = replaceAcronyms(output)
-        mic.say(output)
+        mic.say('I',output)
     else:
-        mic.say(
+        mic.say('A',
             "I'm sorry. I can't see that far ahead.")
 
 

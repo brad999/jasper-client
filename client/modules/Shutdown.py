@@ -24,14 +24,14 @@ def handle(text, mic, profile):
 
     def handleResponse(text):
         if 'no' in text.lower():
-            mic.say("Alright, I will stay alive.")
+            mic.say('A',"Alright, I will stay alive.")
         elif 'yes' in text.lower():
-            mic.say("It was nice knowing you. Good bye.")
+            mic.say('A',"It was nice knowing you. Good bye.")
             os.system("shutdown -h now")
         else:
-            mic.say("I did not get that so I will stay alive.")
+            mic.say('A',"I did not get that so I will stay alive.")
 
-    mic.say("Are you sure you want me to die?")
+    mic.say('A',"Are you sure you want me to die?")
     handleResponse(mic.activeListen())
 
 def isValid(text):

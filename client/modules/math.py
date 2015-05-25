@@ -60,7 +60,7 @@ def handle(text, mic, profile):
 
     #do math
     solution = eval(statement,ns)
-    mic.say(str(solution))
+    mic.say('I',str(solution))
 
 def isValid(text):
     """

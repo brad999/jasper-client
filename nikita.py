@@ -121,7 +121,7 @@ class Nikita(object):
                           % self.config["first_name"])
         else:
             salutation = "How can I be of service?"
-        self.mic.say(salutation)
+        self.mic.say('A',salutation)
 
         conversation = Conversation("NIKITA", self.mic, self.config)
         conversation.handleForever()

@@ -150,7 +150,7 @@ def handle(text, mic, profile):
     if moodScale == 5:
        mood = random.choice(badResponses)
 
-    mic.say(mood)
+    mic.say('I',mood)
 
 
 def isValid(text):

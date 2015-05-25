@@ -1,7 +1,7 @@
 """
 Echo module
 
-Name:           echo.py 
+Name:           echo.py
 Description: 	Responds to echo, repeat, or say and echoes back what was said.
 		Taken from alexsiri7 via github
 Dependencies:	NONE
@@ -21,7 +21,7 @@ def handle(text, mic, profile):
         profile -- contains information related to the user (e.g., phone number)
     """
     output = re.sub(PATTERN, '', text, flags=re.IGNORECASE)
-    mic.say(output)
+    mic.say('A',output)
 
 def isValid(text):
     return bool(re.search(PATTERN, text, re.IGNORECASE))

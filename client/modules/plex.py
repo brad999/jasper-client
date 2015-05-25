@@ -35,10 +35,10 @@ def handle(text, mic, profile):
         else:
            # If this is the first attempt then ask again, else give up
             if frustrationCounter == 0:
-                mic.say("I'm sorry. I don't understand what you would like me to do. Please pick between play, pause, or stop.")
+                mic.say('A',"I'm sorry. I don't understand what you would like me to do. Please pick between play, pause, or stop.")
                 action = determineAction(mic.activeListen(), 1)
             else:
-                mic.say("I'm sorry. I still don't understand you. Please try again later once you learn to speech.")
+                mic.say('A',"I'm sorry. I still don't understand you. Please try again later once you learn to speech.")
                 action = 'quit'
 
         return action, text
@@ -118,7 +118,7 @@ def handle(text, mic, profile):
     elif 'rewind' in text.lower():
         action = 'rewind'
     else:
-        mic.say("How would you like to control Plex? Please say play, pause, or stop.")
+        mic.say('A',"How would you like to control Plex? Please say play, pause, or stop.")
         action, text = determineAction(mic.activeListen(),frustrationCounter)
 
     if action == 'play':
@@ -128,7 +128,7 @@ def handle(text, mic, profile):
             words = x.group(2)
         #if nothing was said after play, prompt for movie name
         else:
-            mic.say("What movie would you like to play?")
+            mic.say('A',"What movie would you like to play?")
             words = mic.activeListen()
         #find movie in Plex database
         movie = findMovie(words.split())
@@ -137,21 +137,21 @@ def handle(text, mic, profile):
             #play the movie
             playMovie(movie)
             #verify movie choice
-            mic.say("Would you like to play " + str(movie[0][0]) + "?")
+            mic.say('A',"Would you like to play " + str(movie[0][0]) + "?")
             if app_utils.YesOrNo(mic.activeListen()):
-                mic.say("Now playing" + str(movie[0][0]) + "...")
+                mic.say('I',"Now playing" + str(movie[0][0]) + "...")
             else:
-                mic.say("Would you like me to try again or quit?")
+                mic.say('A',"Would you like me to try again or quit?")
                 choice = mic.activeListen()
                 if 'try' in choice.lower() or 'again' in choice.lower():
                     handle('play', mic, profile)
                 else:
-                    mic.say("Alright, I'm giving up.")
+                    mic.say('A',"Alright, I'm giving up.")
         elif len(movie) == 0:
-            mic.say("I'm sorry. I did not find any movie matching that name.")
+            mic.say('A',"I'm sorry. I did not find any movie matching that name.")
         else:
             # !!add logic to pick movie when mutliples are returned
-            mic.say("I found multiple movies matching your request and am too stupid to know how to handle this. Play your movie yourself.")
+            mic.say('A',"I found multiple movies matching your request and am too stupid to know how to handle this. Play your movie yourself.")
     elif action == 'pause':
         #send pause command to Plex client
         # !! add ability to control multiple clients

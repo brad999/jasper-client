@@ -27,9 +27,9 @@ def handle(text, mic, profile):
         name = x.group(2)
         message = x.group(3)
     else:
-        mic.say("Who would you like to text?")
+        mic.say('A',"Who would you like to text?")
         name = mic.activeListen()
-        mic.say("What would you like to tell " + name + "?")
+        mic.say('A',"What would you like to tell " + name + "?")
         message = mic.activeListen()
 
     #check for recipient number in contacts.yml
@@ -43,17 +43,17 @@ def handle(text, mic, profile):
             #format message properly
             message = app_utils.convertPunctuation(message.lower())
             #confirm message and recipient before sending
-            mic.say("Are you sure you would like to tell " + name + ", " + message + "?")
+            mic.say('A',"Are you sure you would like to tell " + name + ", " + message + "?")
             if app_utils.YesOrNo(mic.activeListen()):
                 #send text message
                 app_utils.sendTextMsg(profile,recipientNumber,message)
-                mic.say("Message has been sent to " + name + ".")
+                mic.say('A',"Message has been sent to " + name + ".")
             else:
-                mic.say("Message was not sent.")
+                mic.say('A',"Message was not sent.")
         else:
-            mic.say("I'm sorry. I didn't understand that message")
+            mic.say('A',"I'm sorry. I didn't understand that message")
     else:
-        mic.say("I'm sorry. I could not find " + name + " in my address book.")
+        mic.say('A',"I'm sorry. I could not find " + name + " in my address book.")
 
 def isValid(text):
     """
