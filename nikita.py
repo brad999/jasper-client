@@ -5,7 +5,7 @@ import os
 import sys
 import shutil
 import logging
-
+import MySQLdb
 import yaml
 import argparse
 
@@ -110,10 +110,13 @@ class Nikita(object):
                            "to '%s'", tts_engine_slug)
         tts_engine_class = tts.get_engine_by_slug(tts_engine_slug)
 
+        #connect to MySQL server
+        db = MySQLdb.connect(host=self.config['MySQL']['server'], port=3306, user=self.config['MySQL']['user'], passwd=self.config['MySQL']['password'], db="NIKITA")
+
         # Initialize Mic
         self.mic = Mic(tts_engine_class.get_instance(),
                        stt_passive_engine_class.get_passive_instance(),
-                       stt_engine_class.get_active_instance())
+                       stt_engine_class.get_active_instance(), db, self.config)
 
     def run(self):
         if 'first_name' in self.config:

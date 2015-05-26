@@ -9,6 +9,7 @@ import audioop
 import pyaudio
 import alteration
 import nikitapath
+import MySQLdb
 
 
 class Mic:
@@ -16,7 +17,7 @@ class Mic:
     speechRec = None
     speechRec_persona = None
 
-    def __init__(self, speaker, passive_stt_engine, active_stt_engine):
+    def __init__(self, speaker, passive_stt_engine, active_stt_engine, db, profile):
         """
         Initiates the pocketsphinx instance.
 
@@ -35,6 +36,9 @@ class Mic:
                           "can usually be safely ignored.")
         self._audio = pyaudio.PyAudio()
         self._logger.info("Initialization of PyAudio completed.")
+        self.db = db
+        self.db_cursor = self.db.cursor()
+        self.profile = profile
 
     def __del__(self):
         self._audio.terminate()
@@ -261,3 +265,6 @@ class Mic:
         phrase = alteration.clean(phrase)
         self._logger.transcript('Returned: %r|%r', speechType, phrase)
         self.speaker.say(phrase)
+        if speechType == 'I':
+            self.db_cursor.execute("INSERT INTO transcript (nikita_id, create_timestamp, speech_type, speech_text) VALUES (%s, now(), %s, %s)", (self.profile['nikita_id'], speechType, phrase))
+            self.db.commit()

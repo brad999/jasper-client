@@ -9,8 +9,11 @@ import logging
 class Mic:
     prev = None
 
-    def __init__(self, speaker, passive_stt_engine, active_stt_engine):
+    def __init__(self, speaker, passive_stt_engine, active_stt_engine, db, profile):
         self._logger = logging.getLogger(__name__)
+        self.db = db
+        self.db_cursor = self.db.cursor()
+        self.profile = profile
         return
 
     def passiveListen(self, PERSONA):
@@ -32,3 +35,6 @@ class Mic:
     def say(self, speechType, phrase, OPTIONS=None):
         print("NIKITA: %s" % phrase)
         self._logger.transcript('Returned: %r|%r', speechType, phrase)
+        if speechType == 'I':
+            self.db_cursor.execute("INSERT INTO transcript (nikita_id, create_timestamp, speech_type, speech_text) VALUES (%s, now(), %s, %s)", (self.profile['nikita_id'], speechType, phrase))
+            self.db.commit()
