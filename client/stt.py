@@ -15,6 +15,7 @@ import yaml
 import nikitapath
 import diagnose
 import vocabcompiler
+import uuid
 
 
 class AbstractSTTEngine(object):
@@ -70,7 +71,7 @@ class PocketSphinxSTT(AbstractSTTEngine):
     SLUG = 'sphinx'
     VOCABULARY_TYPE = vocabcompiler.PocketsphinxVocabulary
 
-    def __init__(self, vocabulary, hmm_dir="/usr/local/share/" +
+    def __init__(self, vocabulary, hmm_dir="/usr/local/share/"
                  "pocketsphinx/model/hmm/en_US/hub4wsj_sc_8k"):
 
         """
@@ -93,13 +94,13 @@ class PocketSphinxSTT(AbstractSTTEngine):
                                          suffix='.log', delete=False) as f:
             self._logfile = f.name
 
-        self._logger.debug("Initializing PocketSphinx Decoder with hmm_dir " +
+        self._logger.debug("Initializing PocketSphinx Decoder with hmm_dir "
                            "'%s'", hmm_dir)
 
         # Perform some checks on the hmm_dir so that we can display more
         # meaningful error messages if neccessary
         if not os.path.exists(hmm_dir):
-            msg = ("hmm_dir '%s' does not exist! Please make sure that you " +
+            msg = ("hmm_dir '%s' does not exist! Please make sure that you "
                    "have set the correct hmm_dir in your profile.") % hmm_dir
             self._logger.error(msg)
             raise RuntimeError(msg)
@@ -117,8 +118,8 @@ class PocketSphinxSTT(AbstractSTTEngine):
             # We only need mixture_weights OR sendump
             missing_hmm_files.append('mixture_weights or sendump')
         if missing_hmm_files:
-            self._logger.warning("hmm_dir '%s' is missing files: %s. Please " +
-                                 "make sure that you have set the correct " +
+            self._logger.warning("hmm_dir '%s' is missing files: %s. Please "
+                                 "make sure that you have set the correct "
                                  "hmm_dir in your profile.",
                                  hmm_dir, ', '.join(missing_hmm_files))
 
@@ -164,7 +165,7 @@ class PocketSphinxSTT(AbstractSTTEngine):
         self._decoder.end_utt()
 
         result = self._decoder.get_hyp()
-        with open(self._logfile, 'r+') as f:
+        with open(self._logfile, 'r ') as f:
             for line in f:
                 self._logger.debug(line.strip())
             f.truncate()
@@ -186,14 +187,14 @@ class JuliusSTT(AbstractSTTEngine):
     SLUG = 'julius'
     VOCABULARY_TYPE = vocabcompiler.JuliusVocabulary
 
-    def __init__(self, vocabulary=None, hmmdefs="/usr/share/voxforge/julius/" +
-                 "acoustic_model_files/hmmdefs", tiedlist="/usr/share/" +
+    def __init__(self, vocabulary=None, hmmdefs="/usr/share/voxforge/julius/"
+                 "acoustic_model_files/hmmdefs", tiedlist="/usr/share/"
                  "voxforge/julius/acoustic_model_files/tiedlist"):
         self._logger = logging.getLogger(__name__)
         self._vocabulary = vocabulary
         self._hmmdefs = hmmdefs
         self._tiedlist = tiedlist
-        self._pattern = re.compile(r'sentence(\d+): <s> (.+) </s>')
+        self._pattern = re.compile(r'sentence(\d ): <s> (. ) </s>')
 
         # Inital test run: we run this command once to log errors/warnings
         cmd = ['julius',
@@ -375,11 +376,11 @@ class GoogleSTT(AbstractSTTEngine):
         """
 
         if not self.api_key:
-            self._logger.critical('API key missing, transcription request ' +
+            self._logger.critical('API key missing, transcription request '
                                   'aborted.')
             return []
         elif not self.language:
-            self._logger.critical('Language info missing, transcription ' +
+            self._logger.critical('Language info missing, transcription '
                                   'request aborted.')
             return []
 
@@ -396,7 +397,7 @@ class GoogleSTT(AbstractSTTEngine):
             self._logger.critical('Request failed with http status %d',
                                   r.status_code)
             if r.status_code == requests.codes['forbidden']:
-                self._logger.warning('Status 403 is probably caused by an ' +
+                self._logger.warning('Status 403 is probably caused by an '
                                      'invalid Google API key.')
             return []
         r.encoding = 'utf-8'
@@ -486,7 +487,7 @@ class AttSTT(AbstractSTTEngine):
         r = self._get_response(data)
         if r.status_code == requests.codes['unauthorized']:
             # Request token invalid, retry once with a new token
-            self._logger.warning('OAuth access token invalid, generating a ' +
+            self._logger.warning('OAuth access token invalid, generating a '
                                  'new one and retrying...')
             self._token = None
             r = self._get_response(data)
@@ -579,7 +580,117 @@ class WitAiSTT(AbstractSTTEngine):
         self._token = value
         self._headers = {'Authorization': 'Bearer %s' % self.token,
                          'accept': 'application/json',
-                         'Content-Type': 'audio/wav'}
+                         'Content-Type': 'audio/raw;encoding=unsigned-integer;bits=16;rate=8000;endian=little',
+                         'Transfer-encoding' : 'chunked'}
+
+    @property
+    def headers(self):
+        return self._headers
+
+    def parse_response(self, r):
+        try:
+            r.raise_for_status()
+            text = r.json()['_text']
+            self._logger.info(len(r.json()["outcomes"]))
+        except requests.exceptions.HTTPError:
+            self._logger.critical('Request failed with response: %r',
+                                  r.text,
+                                  exc_info=True)
+            return []
+        except requests.exceptions.RequestException:
+            self._logger.critical('Request failed.', exc_info=True)
+            return []
+        except ValueError as e:
+            self._logger.critical('Cannot parse response: %s',
+                                  e.args[0])
+            return []
+        except KeyError:
+            self._logger.critical('Cannot parse response.',
+                                   exc_info=True)
+            return []
+        else:
+            transcribed = []
+            if text:
+                transcribed.append(text.upper())
+            self._logger.info('Transcribed: %r', transcribed)
+            return transcribed
+
+    def transcribe(self, fp):
+        data = fp.read()
+        r = requests.post('https://api.wit.ai/speech?v=20150101',
+                          data=data,
+                          headers=self.headers)
+        return self.parse_response(r)
+
+    def transcribe_live(self, stream):
+        parameters = {'encoding':'unsigned-integer',
+                      'bits' : '16',
+                      'rate' : '8000',
+                      'endian' : 'little'}
+        self._logger.info("live streaming")
+        r = requests.post('https://api.wit.ai/speech?v=20150101',
+                          data=stream(),
+                          headers=self.headers)
+        self._logger.info("response was strange: %s",r.json());
+        return self.parse_response(r)
+
+    @classmethod
+    def is_available(cls):
+        return diagnose.check_network_connection()
+
+class BingSTT(AbstractSTTEngine):
+    """
+    Speech-To-Text implementation which relies on the Wit.ai Speech API.
+
+    This implementation requires an Wit.ai Access Token to be present in
+    profile.yml. Please sign up at https://wit.ai and copy your instance
+    token, which can be found under Settings in the Wit console to your
+    profile.yml:
+     ...
+     stt_engine: witai
+     witai-stt:
+       access_token:    ERJKGE86SOMERANDOMTOKEN23471AB
+    """
+
+    SLUG = "bing"
+
+    def __init__(self, access_token):
+        self._logger = logging.getLogger(__name__)
+        self.token = access_token
+
+    @classmethod
+    def get_config(cls):
+        # FIXME: Replace this as soon as we have a config module
+        config = {}
+        # Try to get wit.ai Auth token from config
+        profile_path = jasperpath.config('profile.yml')
+        if os.path.exists(profile_path):
+            with open(profile_path, 'r') as f:
+                profile = yaml.safe_load(f)
+                if 'witai-stt' in profile:
+                    if 'access_token' in profile['witai-stt']:
+                        config['access_token'] = \
+                            profile['witai-stt']['access_token']
+        return config
+
+    @property
+    def token(self):
+        return self._token
+
+    @token.setter
+    def token(self, value):
+        self._token = value
+        self._headers = {'Authorization': 'Bearer %s' % self.token,
+                         'accept': 'application/json',
+                         'Content-Type': 'audio/wav; samplerate=16000'}
+        self._payload = {'version' : '3.0',
+                         'request' : uuid.uuid4(),
+                         'appID' : 'D4D52672-91D7-4C74-8AD8-42B1D98141A5',
+                         'format' : 'json',
+                         'locale' : 'en-US',
+                         'device.os' : 'Raspbian',
+                         'scenarios' : 'ulm',
+                         'instanceid' : uuid.uuid4()}
 
     @property
     def headers(self):
@@ -587,9 +698,14 @@ class WitAiSTT(AbstractSTTEngine):
 
     def transcribe(self, fp):
         data = fp.read()
-        r = requests.post('https://api.wit.ai/speech?v=20150101',
+
+        self._payload['request'] = uuid.uuid4()
+
+        r = requests.post('https://speech.platform.bing.com/recognize',
                           data=data,
-                          headers=self.headers)
+                          headers=self.headers,
+                          params=self._payload)
+
         try:
             r.raise_for_status()
             text = r.json()['_text']
@@ -639,12 +755,12 @@ def get_engine_by_slug(slug=None):
         raise ValueError("No STT engine found for slug '%s'" % slug)
     else:
         if len(selected_engines) > 1:
-            print(("WARNING: Multiple STT engines found for slug '%s'. " +
+            print(("WARNING: Multiple STT engines found for slug '%s'. "
                    "This is most certainly a bug.") % slug)
         engine = selected_engines[0]
         if not engine.is_available():
-            raise ValueError(("STT engine '%s' is not available (due to " +
-                              "missing dependencies, missing " +
+            raise ValueError(("STT engine '%s' is not available (due to "
+                              "missing dependencies, missing "
                               "dependencies, etc.)") % slug)
         return engine
 
