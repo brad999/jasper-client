@@ -71,7 +71,7 @@ class PocketSphinxSTT(AbstractSTTEngine):
     SLUG = 'sphinx'
     VOCABULARY_TYPE = vocabcompiler.PocketsphinxVocabulary
 
-    def __init__(self, vocabulary, hmm_dir="/usr/local/share/"
+    def __init__(self, vocabulary, hmm_dir="/usr/local/share/" +
                  "pocketsphinx/model/hmm/en_US/hub4wsj_sc_8k"):
 
         """
@@ -94,13 +94,13 @@ class PocketSphinxSTT(AbstractSTTEngine):
                                          suffix='.log', delete=False) as f:
             self._logfile = f.name
 
-        self._logger.debug("Initializing PocketSphinx Decoder with hmm_dir "
+        self._logger.debug("Initializing PocketSphinx Decoder with hmm_dir " +
                            "'%s'", hmm_dir)
 
         # Perform some checks on the hmm_dir so that we can display more
         # meaningful error messages if neccessary
         if not os.path.exists(hmm_dir):
-            msg = ("hmm_dir '%s' does not exist! Please make sure that you "
+            msg = ("hmm_dir '%s' does not exist! Please make sure that you " +
                    "have set the correct hmm_dir in your profile.") % hmm_dir
             self._logger.error(msg)
             raise RuntimeError(msg)
@@ -118,8 +118,8 @@ class PocketSphinxSTT(AbstractSTTEngine):
             # We only need mixture_weights OR sendump
             missing_hmm_files.append('mixture_weights or sendump')
         if missing_hmm_files:
-            self._logger.warning("hmm_dir '%s' is missing files: %s. Please "
-                                 "make sure that you have set the correct "
+            self._logger.warning("hmm_dir '%s' is missing files: %s. Please " +
+                                 "make sure that you have set the correct " +
                                  "hmm_dir in your profile.",
                                  hmm_dir, ', '.join(missing_hmm_files))
 
@@ -165,7 +165,7 @@ class PocketSphinxSTT(AbstractSTTEngine):
         self._decoder.end_utt()
 
         result = self._decoder.get_hyp()
-        with open(self._logfile, 'r ') as f:
+        with open(self._logfile, 'r+') as f:
             for line in f:
                 self._logger.debug(line.strip())
             f.truncate()
@@ -187,14 +187,14 @@ class JuliusSTT(AbstractSTTEngine):
     SLUG = 'julius'
     VOCABULARY_TYPE = vocabcompiler.JuliusVocabulary
 
-    def __init__(self, vocabulary=None, hmmdefs="/usr/share/voxforge/julius/"
-                 "acoustic_model_files/hmmdefs", tiedlist="/usr/share/"
+    def __init__(self, vocabulary=None, hmmdefs="/usr/share/voxforge/julius/" +
+                 "acoustic_model_files/hmmdefs", tiedlist="/usr/share/" +
                  "voxforge/julius/acoustic_model_files/tiedlist"):
         self._logger = logging.getLogger(__name__)
         self._vocabulary = vocabulary
         self._hmmdefs = hmmdefs
         self._tiedlist = tiedlist
-        self._pattern = re.compile(r'sentence(\d ): <s> (. ) </s>')
+        self._pattern = re.compile(r'sentence(\d+): <s> (.+) </s>')
 
         # Inital test run: we run this command once to log errors/warnings
         cmd = ['julius',
@@ -376,11 +376,11 @@ class GoogleSTT(AbstractSTTEngine):
         """
 
         if not self.api_key:
-            self._logger.critical('API key missing, transcription request '
+            self._logger.critical('API key missing, transcription request ' +
                                   'aborted.')
             return []
         elif not self.language:
-            self._logger.critical('Language info missing, transcription '
+            self._logger.critical('Language info missing, transcription ' +
                                   'request aborted.')
             return []
 
@@ -397,7 +397,7 @@ class GoogleSTT(AbstractSTTEngine):
             self._logger.critical('Request failed with http status %d',
                                   r.status_code)
             if r.status_code == requests.codes['forbidden']:
-                self._logger.warning('Status 403 is probably caused by an '
+                self._logger.warning('Status 403 is probably caused by an ' +
                                      'invalid Google API key.')
             return []
         r.encoding = 'utf-8'
@@ -487,7 +487,7 @@ class AttSTT(AbstractSTTEngine):
         r = self._get_response(data)
         if r.status_code == requests.codes['unauthorized']:
             # Request token invalid, retry once with a new token
-            self._logger.warning('OAuth access token invalid, generating a '
+            self._logger.warning('OAuth access token invalid, generating a ' +
                                  'new one and retrying...')
             self._token = None
             r = self._get_response(data)
@@ -755,12 +755,12 @@ def get_engine_by_slug(slug=None):
         raise ValueError("No STT engine found for slug '%s'" % slug)
     else:
         if len(selected_engines) > 1:
-            print(("WARNING: Multiple STT engines found for slug '%s'. "
+            print(("WARNING: Multiple STT engines found for slug '%s'. " +
                    "This is most certainly a bug.") % slug)
         engine = selected_engines[0]
         if not engine.is_available():
-            raise ValueError(("STT engine '%s' is not available (due to "
-                              "missing dependencies, missing "
+            raise ValueError(("STT engine '%s' is not available (due to " +
+                              "missing dependencies, missing " +
                               "dependencies, etc.)") % slug)
         return engine
 

@@ -237,7 +237,8 @@ class Mic:
             self._logger.info("we're beginning to listen at threshhold %s", THRESHOLD)
             for i in range(0, RATE / CHUNK * LISTEN_TIME):
                 data = stream.read(CHUNK)
-                yield data
+                frames.append(data)
+                #yield data
                 score = self.getScore(data)
                 #self._logger.debug("Score was: %s", score)
 
