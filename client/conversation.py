@@ -20,10 +20,12 @@ class Conversation(object):
            return {}
 
         parameters = {"q" : input[0].lower()}
-        r = requests.post('https://api.wit.ai/message?v=20150602',
-                      headers={ 'Authorization': 'Bearer KEYHERE',
-                     'accept': 'application/json'},
+        headers = {'Authorization': 'Bearer %s' % self.profile['witai-stt']['access_token'],
+                         'accept': 'application/json'}
+        r = requests.post('https://api.wit.ai/message?v=20150611',
+                      headers=headers,
                       params=parameters)
+        print r.url
 
         try:
             r.raise_for_status()

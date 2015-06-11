@@ -580,8 +580,7 @@ class WitAiSTT(AbstractSTTEngine):
         self._token = value
         self._headers = {'Authorization': 'Bearer %s' % self.token,
                          'accept': 'application/json',
-                         'Content-Type': 'audio/raw;encoding=unsigned-integer;bits=16;rate=8000;endian=little',
-                         'Transfer-encoding' : 'chunked'}
+                         'Content-Type': 'audio/wav'}
 
     @property
     def headers(self):
@@ -617,21 +616,9 @@ class WitAiSTT(AbstractSTTEngine):
 
     def transcribe(self, fp):
         data = fp.read()
-        r = requests.post('https://api.wit.ai/speech?v=20150101',
+        r = requests.post('https://api.wit.ai/speech?v=20150611',
                           data=data,
                           headers=self.headers)
-        return self.parse_response(r)
-
-    def transcribe_live(self, stream):
-        parameters = {'encoding':'unsigned-integer',
-                      'bits' : '16',
-                      'rate' : '8000',
-                      'endian' : 'little'}
-        self._logger.info("live streaming")
-        r = requests.post('https://api.wit.ai/speech?v=20150101',
-                          data=stream(),
-                          headers=self.headers)
-        self._logger.info("response was strange: %s",r.json());
         return self.parse_response(r)
 
     @classmethod
