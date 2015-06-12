@@ -23,5 +23,5 @@ def handle(text, mic, profile):
     output = re.sub(PATTERN, '', text, flags=re.IGNORECASE)
     mic.say('A',output)
 
-def isValid(text):
+def isValid(text, intent):
     return bool(re.search(PATTERN, text, re.IGNORECASE))

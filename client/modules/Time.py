@@ -25,7 +25,7 @@ def handle(text, mic, profile):
     mic.say('I',"It is %s right now." % response)
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if input is related to the time.
 

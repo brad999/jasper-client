@@ -27,5 +27,5 @@ def handle(text, mic, profile):
     mic.say('A',message)
 
 
-def isValid(text):
+def isValid(text, intent):
     return True

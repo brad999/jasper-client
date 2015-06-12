@@ -55,7 +55,7 @@ def handle(text, mic, profile):
     else:
         mic.say('A',"I'm sorry. I could not find " + name + " in my address book.")
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to texting.
 

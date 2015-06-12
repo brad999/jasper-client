@@ -165,7 +165,7 @@ def handle(text, mic, profile):
     elif action == 'rewind':
         urllib2.urlopen('http://' + str(profile['PlexClients']["selfIP"]) + ':' + str(profile['PlexClients']["selfPort"]) + '/player/playback/stepBack')
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to plex.
         Arguments:

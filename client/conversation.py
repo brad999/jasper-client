@@ -25,7 +25,6 @@ class Conversation(object):
         r = requests.post('https://api.wit.ai/message?v=20150611',
                       headers=headers,
                       params=parameters)
-        print r.url
 
         try:
             r.raise_for_status()
@@ -81,7 +80,13 @@ class Conversation(object):
             self._logger.debug("Stopped to listen actively with threshold: %r",
                                threshold)
 
-            intent = self.determineIntent(input)
+            #!! intent flag, hardcoded for testing, move to profile
+            useIntents = True
+
+            if useIntents == True:
+                intent = self.determineIntent(input)
+            else:
+                intent = None
 
             if input:
                 self.brain.query(input,intent)

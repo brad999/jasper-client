@@ -56,7 +56,7 @@ def handle(text, mic, profile):
     firstLine(mic.activeListen())
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to jokes/humor.
 

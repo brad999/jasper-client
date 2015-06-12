@@ -2,15 +2,15 @@
 Mood module
 
 Name:           mood.py
-Description: 	responds to common ways of asking "How are you?"
-		determines mood based on weather, stock market, and wording of top news stories
-Dependencies:	Weather Underground API (requires key)
-		USA Today API (requires key)
-		Google Finance API (no key required)
+Description:     responds to common ways of asking "How are you?"
+        determines mood based on weather, stock market, and wording of top news stories
+Dependencies:    Weather Underground API (requires key)
+        USA Today API (requires key)
+        Google Finance API (no key required)
 Author:         Brad Ahlers (github - brad999)
 """
 
-import random, urllib2, json, re
+import random, urllib2, json, re, json
 from client import nikitapath
 
 WORDS = ["HOW", "ARE", "YOU", "TODAY", "IS", "IT", "GOING", "HOW\'S"]
@@ -153,11 +153,16 @@ def handle(text, mic, profile):
     mic.say('I',mood)
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to mood.
 
         Arguments:
         text -- user-input, typically transcribed speech
+        intent -- wit determined intent
     """
-    return bool(re.search(r'\b(how are you today|how is it going|how are you|how\'s it going)\b', text, re.IGNORECASE))
+    #Use intent if present
+    if intent == None:
+        return bool(re.search(r'\b(how are you today|how is it going|how are you|how\'s it going)\b', text, re.IGNORECASE))
+    else:
+        return bool(json.loads(json.dumps(intent))['intent'] == 'mood')

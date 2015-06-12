@@ -128,7 +128,7 @@ def handle(text, mic, profile):
         mic.say('I',response)
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to email.
 

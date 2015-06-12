@@ -34,7 +34,7 @@ def handle(text, mic, profile):
     mic.say('A',"Are you sure you want me to die?")
     handleResponse(mic.activeListen())
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to shutdown.
 

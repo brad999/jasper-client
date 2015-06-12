@@ -161,7 +161,7 @@ def handle(text, mic, profile):
             "I'm sorry. I can't see that far ahead.")
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the text is related to the weather.
 

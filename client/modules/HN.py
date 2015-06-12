@@ -129,7 +129,7 @@ def handle(text, mic, profile):
         mic.say('A',"Here are some front-page articles. " + all_titles)
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to Hacker News.
 

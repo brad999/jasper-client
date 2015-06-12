@@ -39,7 +39,7 @@ def handle(text, mic, profile):
         "and complete control over your home and daily life.")
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to self (Nikita).
 

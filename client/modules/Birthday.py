@@ -57,7 +57,7 @@ def handle(text, mic, profile):
     mic.say('I',output)
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to birthdays.
 

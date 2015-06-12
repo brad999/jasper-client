@@ -62,7 +62,7 @@ def handle(text, mic, profile):
     solution = eval(statement,ns)
     mic.say('I',str(solution))
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to math.
         Arguments:

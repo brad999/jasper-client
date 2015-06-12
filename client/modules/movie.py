@@ -147,7 +147,7 @@ def handle(text, mic, profile):
         else:
             mic.say('A',"OK, enjoy the show!")
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to movie.
 

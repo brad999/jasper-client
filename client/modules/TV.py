@@ -36,7 +36,7 @@ def handle(text, mic, profile):
         mic.say('A',"I'm sorry that command is not currently supported")
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to TV.
 

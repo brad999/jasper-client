@@ -2,6 +2,7 @@
 import logging
 import pkgutil
 import nikitapath
+import json
 
 
 class Brain(object):
@@ -64,19 +65,26 @@ class Brain(object):
         Arguments:
         text -- user input, typically speech, to be parsed by a module
         """
+
         for module in self.modules:
             for text in texts:
                 validText = False
-                try:
-                    validText = module.isValid(text,intent)
-                except TypeError:
-                    validText = module.isValid(text)
+                #only use intent flag is on and confidence is greater than 60%
+                if intent != None and json.loads(json.dumps(intent))['confidence'] > 0.60:
+                    print "USING INTENT..."
+                    validText = module.isValid(text, intent)
+                else:
+                    print "NOT USING INTENT"
+                    validText = module.isValid(text, None)
+
                 if validText:
                     self._logger.debug("'%s' is a valid phrase for module " +
                                        "'%s'", text, module.__name__)
                     try:
+                        self._logger.info("Passing intent to handle...")
                         module.handle(text, self.mic, self.profile, intent)
                     except TypeError:
+                        self._logger.info("Not passing intent to handle...")
                         module.handle(text, self.mic, self.profile)
                     except:
                         self._logger.error('Failed to execute module',

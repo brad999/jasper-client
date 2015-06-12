@@ -121,7 +121,7 @@ def handle(text, mic, profile):
             "Here are the current top headlines. " + all_titles)
 
 
-def isValid(text):
+def isValid(text, intent):
     """
         Returns True if the input is related to the news.
 
