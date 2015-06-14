@@ -71,21 +71,27 @@ class Brain(object):
                 validText = False
                 #only use intent flag is on and confidence is greater than 60%
                 if intent != None and json.loads(json.dumps(intent))['confidence'] > 0.60:
-                    print "USING INTENT..."
+                    self._logger.info("Using intent to check '%s'...", module.__name__)
                     validText = module.isValid(text, intent)
                 else:
-                    print "NOT USING INTENT"
+                    self._logger.info("Using regex to check '%s'...", module.__name__)
                     validText = module.isValid(text, None)
 
                 if validText:
                     self._logger.debug("'%s' is a valid phrase for module " +
                                        "'%s'", text, module.__name__)
+                    #pass intent if intent flag is on
                     try:
-                        self._logger.info("Passing intent to handle...")
-                        module.handle(text, self.mic, self.profile, intent)
-                    except TypeError:
-                        self._logger.info("Not passing intent to handle...")
-                        module.handle(text, self.mic, self.profile)
+                        if intent != None:
+                            try:
+                                module.handleWithWit(text, self.mic, self.profile, intent)
+                                self._logger.info("Passing intent to wit handle fucntion...")
+                            except:
+                                self._logger.info("Using standard handle function...")
+                                module.handle(text, self.mic, self.profile)
+                        else:
+                            self._logger.info("Using standard handle function...")
+                            module.handle(text, self.mic, self.profile)
                     except:
                         self._logger.error('Failed to execute module',
                                            exc_info=True)

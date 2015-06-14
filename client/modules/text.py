@@ -5,10 +5,36 @@ Description:     Sends text message to designated recipient. Responds to "text" 
 Dependencies:    Gmail, Contacts list
 Author:          Brad Ahlers (github - brad999)
 """
-import re, smtplib, yaml
+import re, smtplib, yaml, json
 from client import nikitapath, app_utils
 
 WORDS = ["TEXT", "TELL"]
+
+def getContactNumber(name):
+    f = open(nikitapath.data('text','CONTACTS.yml'))
+    contacts = yaml.safe_load(f)
+    recipientNumber = str(contacts[name.lower()])
+    f.close()
+    return recipientNumber
+
+def formatAndSend(mic,profile,recipientNumber,message,name):
+    if recipientNumber:
+        #check for a message
+        if message:
+            #format message properly
+            message = app_utils.convertPunctuation(message.lower())
+            #confirm message and recipient before sending
+            mic.say('A',"Are you sure you would like to tell " + name + ", " + message + "?")
+            if app_utils.YesOrNo(mic.activeListen()):
+                #send text message
+                app_utils.sendTextMsg(profile,recipientNumber,message)
+                mic.say('A',"Message has been sent to " + name + ".")
+            else:
+                mic.say('A',"Message was not sent.")
+        else:
+            mic.say('A',"I'm sorry. I didn't understand that message")
+    else:
+        mic.say('A',"I'm sorry. I could not find " + name + " in my address book.")
 
 def handle(text, mic, profile):
     """
@@ -33,27 +59,27 @@ def handle(text, mic, profile):
         message = mic.activeListen()
 
     #check for recipient number in contacts.yml
-    f = open(nikitapath.data('text','CONTACTS.yml'))
-    contacts = yaml.safe_load(f)
-    recipientNumber = str(contacts[name.lower()])
-    f.close()
-    if recipientNumber:
-        #check for a message
-        if message:
-            #format message properly
-            message = app_utils.convertPunctuation(message.lower())
-            #confirm message and recipient before sending
-            mic.say('A',"Are you sure you would like to tell " + name + ", " + message + "?")
-            if app_utils.YesOrNo(mic.activeListen()):
-                #send text message
-                app_utils.sendTextMsg(profile,recipientNumber,message)
-                mic.say('A',"Message has been sent to " + name + ".")
-            else:
-                mic.say('A',"Message was not sent.")
-        else:
-            mic.say('A',"I'm sorry. I didn't understand that message")
+    recipientNumber = getContactNumber(name)
+
+    #format message and send
+    formatAndSend(mic,profile,recipientNumber,message,name)
+
+def handleWithWit(text, mic, profile, intent):
+    # check if wit has suggestions
+    # !! add logic to check if name was provided but no message
+    json_dump = json.dumps(intent)
+    witEntities = json.loads(json_dump)
+    if witEntities['entities']['message_body'][0]['suggested'] and witEntities['entities']['contact'][0]['suggested']:
+        print "here I am"
+        name = witEntities['entities']['contact'][0]['value']
+        message = witEntities['entities']['message_body'][0]['value']
+
+        #check for recipient number in contacts.yml
+        recipientNumber = getContactNumber(name)
+        #format message and send
+        formatAndSend(mic,profile,recipientNumber,message,name)
     else:
-        mic.say('A',"I'm sorry. I could not find " + name + " in my address book.")
+        handle(text, mic, profile)
 
 def isValid(text, intent):
     """
@@ -61,5 +87,10 @@ def isValid(text, intent):
 
         Arguments:
         text -- user-input, typically transcribed speech
+        intent -- wit determined intent
     """
-    return bool(re.search(r'\b(text|tell(?!me))\b', text, re.IGNORECASE))
+    #Use intent if intent flag is on
+    if intent == None:
+        return bool(re.search(r'\b(text|tell(?!me))\b', text, re.IGNORECASE))
+    else:
+        return bool(json.loads(json.dumps(intent))['intent'] == 'send_message')

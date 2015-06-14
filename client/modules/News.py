@@ -3,6 +3,7 @@ import feedparser
 from client import app_utils
 import re
 from semantic.numbers import NumberService
+import json
 
 WORDS = ["NEWS", "YES", "NO", "FIRST", "SECOND", "THIRD"]
 
@@ -127,5 +128,10 @@ def isValid(text, intent):
 
         Arguments:
         text -- user-input, typically transcribed speech
+        intent -- wit determined intent
     """
-    return bool(re.search(r'\b(news|headline)\b', text, re.IGNORECASE))
+    #Use intent if intent flag is on
+    if intent == None:
+        return bool(re.search(r'\b(news|headline)\b', text, re.IGNORECASE))
+    else:
+        return bool(json.loads(json.dumps(intent))['intent'] == 'get_headlines')
