@@ -14,6 +14,7 @@ class Conversation(object):
         self.profile = profile
         self.brain = Brain(mic, profile)
         self.notifier = Notifier(profile)
+        self.useIntents = profile['UseIntents']
 
     def determineIntent(self, input):
         if (len(input) == 0):
@@ -80,10 +81,7 @@ class Conversation(object):
             self._logger.debug("Stopped to listen actively with threshold: %r",
                                threshold)
 
-            #!! intent flag, hardcoded for testing, move to profile
-            useIntents = True
-
-            if useIntents == True:
+            if self.useIntents == True:
                 intent = self.determineIntent(input)
             else:
                 intent = None
