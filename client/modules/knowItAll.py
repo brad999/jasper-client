@@ -14,7 +14,7 @@ import random, re, wolframalpha, time, sys
 from sys import maxint
 
 from client import jasperpath
-WORDS = ["WHO", "WHAT", "HOW", "TELL", "ME", "ABOUT", "WHEN"]
+WORDS = ["WHO", "WHAT", "HOW", "TELL", "ME", "ABOUT", "WHEN", "DEFINE"]
 
 PRIORITY = -1
 
@@ -28,6 +28,9 @@ def handle(text, mic, profile):
         pod = query.pods[1]
         if pod.text:
             texts = pod.text
+            #only get the first line of the response
+            #primarily used to remove multiple definitions
+            texts = texts.split("\n", 1)[0]
         else:
             texts = "I can not find anything"
 
@@ -37,15 +40,7 @@ def handle(text, mic, profile):
 
 
 def isValid(text):
-    if re.search(r'\bwho\b', text, re.IGNORECASE):
-        return True
-    elif re.search(r'\bwhat\b', text, re.IGNORECASE):
-        return True
-    elif re.search(r'\bhow\b', text, re.IGNORECASE):
-        return True
-    elif re.search(r'\btell me about\b', text, re.IGNORECASE):
-        return True
-    elif re.search(r'\bwhen\b', text, re.IGNORECASE):
+    if re.search(r'\bwho|what|when|how|tell me|define\b', text, re.IGNORECASE):
         return True
     else:
         return False
