@@ -40,7 +40,4 @@ def handle(text, mic, profile):
 
 
 def isValid(text):
-    if re.search(r'\bwho|what|when|how|tell me|define\b', text, re.IGNORECASE):
-        return True
-    else:
-        return False
+    return bool(re.search(r'\bwho|what|when|how|tell me|define\b', text, re.IGNORECASE))
