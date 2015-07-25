@@ -8,7 +8,7 @@ Dependencies:    none
 Author:         Brad Ahlers (github - brad999)
 """
 
-import re
+import re, datetime
 
 WORDS = ["WHO", "WHAT", "ARE", "YOU", "CAN", "DO"]
 
@@ -37,7 +37,19 @@ def handle(text, mic, profile):
     elif 'who' in text.lower() or 'what' in text.lower() or 'yourself' in text.lower():
         mic.say('I',"My name is Nikita. I am a personalized assistance developed to provide simple " +
         "and complete control over your home and daily life.")
-
+    # respond to questions about age
+    elif 'old' in text.lower() or 'age' in text.lower():
+        birthday = datetime.datetime(2015,04,06)
+        today = datetime.datetime.now()
+        age = (today-birthday).days
+        age = (age / 365)
+        if age > 0:
+            mic.say('I',"I am " + str(age) + "years old.")
+        else:
+            mic.say('I',"I am less than a year old. I was born on April 6th, twenty fifteen.")
+    # respond to questions about birthday
+    elif 'birth' in text.lower() or 'born' in text.lower():
+        mic.say("I","I was born on April 6th, twenty fifteen.")
 
 def isValid(text):
     """
