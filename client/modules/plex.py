@@ -23,6 +23,7 @@ def handle(text, mic, profile):
         mic -- used to interact with the user (for both input and output)
         profile -- contains information related to the user (e.g., phone number)
     """
+
     def determineAction(text,frustrationCounter):
         if 'play' in text.lower():
             action = 'play'
@@ -43,27 +44,27 @@ def handle(text, mic, profile):
 
         return action, text
 
-    def findMovie(words):
-        #parse the list of words to find a matching movie
+    def findMovie(movie):
+        #tries to find the movie provided in the plex database
         #return the name of the movie and information required to play
         try:
             dbCon = sqlite3.connect('/home/pi/com.plexapp.plugins.library.db')
 
             #select any movie titles that contain the first word
-            sql = "SELECT title, id FROM metadata_items WHERE library_section_id=4 AND title LIKE \'%" + words[0] + "%\' ORDER BY title;"
+            sql = "SELECT title, id FROM metadata_items WHERE library_section_id=1 AND title LIKE \'%" + movie + "%\' ORDER BY title;"
             cur = dbCon.cursor()
             cur.execute(sql)
 
             tempMovies = cur.fetchall()
 
             #convert words to numbers before checking match
-            words = app_utils.convertNumberWords(' '.join(words).lower())
+            words = app_utils.convertNumberWords(movie.lower())
             #check for an exact match first
             for x in tempMovies:
                 if x[0].lower() == words:
                     it = iter(x)
-                    movie = zip(it,it)
-                    return movie
+                    tempMovie = zip(it,it)
+                    return tempMovie
 
             #if only one result found in SQL, return it
             if len(tempMovies) == 1:
@@ -107,63 +108,82 @@ def handle(text, mic, profile):
 
         urllib2.urlopen(URL)
 
-    #First determine action
-    frustrationCounter = 0
-    if 'play' in text.lower():
-        action = 'play'
-    elif 'pause' in text.lower():
-        action = 'pause'
-    elif 'stop' in text.lower():
-        action = 'stop'
-    elif 'rewind' in text.lower():
-        action = 'rewind'
-    else:
-        mic.say('A',"How would you like to control Plex? Please say play, pause, or stop.")
-        action, text = determineAction(mic.activeListen(),frustrationCounter)
+    def theHardWay(profile,text):
+        #First determine action
+        frustrationCounter = 0
+        if 'play' in text.lower():
+            action = 'play'
+        else:
+            mic.say('A',"How would you like to control Plex? Please say play, pause, or stop.")
+            action, text = determineAction(mic.activeListen(),frustrationCounter)
 
-    if action == 'play':
-        #determine if anything was said after play
-        if re.search("(play) (.*)",text, re.IGNORECASE):
-            x = re.search("(play) (.*)",text, re.IGNORECASE)
-            words = x.group(2)
-        #if nothing was said after play, prompt for movie name
-        else:
-            mic.say('A',"What movie would you like to play?")
-            words = mic.activeListen()
-        #find movie in Plex database
-        movie = findMovie(words.split())
-        #play movie if match is found, else notify
-        if len(movie) == 1:
-            #play the movie
-            playMovie(movie)
-            #verify movie choice
-            mic.say('A',"Would you like to play " + str(movie[0][0]) + "?")
-            if app_utils.YesOrNo(mic.activeListen()):
-                mic.say('I',"Now playing" + str(movie[0][0]) + "...")
+        if action == 'play':
+            #determine if anything was said after play
+            if re.search("(play) (.*)",text, re.IGNORECASE):
+                x = re.search("(play) (.*)",text, re.IGNORECASE)
+                words = x.group(2)
+            #if nothing was said after play, prompt for movie name
             else:
-                mic.say('A',"Would you like me to try again or quit?")
-                choice = mic.activeListen()
-                if 'try' in choice.lower() or 'again' in choice.lower():
-                    handle('play', mic, profile)
+                mic.say('A',"What movie would you like to play?")
+                words = mic.activeListen()
+            #find movie in Plex database
+            temp = words.split()
+            movie = findMovie(temp[0])
+            #play movie if match is found, else notify
+            if len(movie) == 1:
+                #play the movie
+                playMovie(movie)
+                #verify movie choice
+                mic.say('A',"Would you like to play " + str(movie[0][0]) + "?")
+                if app_utils.YesOrNo(mic.activeListen()):
+                    mic.say('I',"Now playing" + str(movie[0][0]) + "...")
                 else:
-                    mic.say('A',"Alright, I'm giving up.")
-        elif len(movie) == 0:
-            mic.say('A',"I'm sorry. I did not find any movie matching that name.")
+                    mic.say('A',"Would you like me to try again or quit?")
+                    choice = mic.activeListen()
+                    if 'try' in choice.lower() or 'again' in choice.lower():
+                        handle('play', mic, profile)
+                    else:
+                        mic.say('A',"Alright, I'm giving up.")
+            elif len(movie) == 0:
+                mic.say('A',"I'm sorry. I did not find any movie matching that name.")
+            else:
+                # !!add logic to pick movie when mutliples are returned
+                mic.say('A',"I found multiple movies matching your request and am too stupid to know how to handle this. Play your movie yourself.")
+
+    # play operation
+    if 'play' in text.lower():
+        # attempt to use wit to determine intent
+        intent = app_utils.determineIntent(profile,text)
+        #Use intent if found
+        if intent:
+            # check intent (play, stop, rewind, etc)
+            if json.loads(json.dumps(intent))['intent'] == 'query_movie':
+                if json.loads(json.dumps(intent))['entities']['title'][0]['suggested']:
+                    movie = json.loads(json.dumps(intent))['entities']['title'][0]['value']
+                    movieID = findMovie(movie)
+                    playMovie(movieID)
+                    mic.say('I',"Now playing" + str(movie) + "...")
+                else:
+                    theHardWay(profile,text)
+            else:
+                theHardWay(profile,text)
+        # if no intent is found, do it the hard way
         else:
-            # !!add logic to pick movie when mutliples are returned
-            mic.say('A',"I found multiple movies matching your request and am too stupid to know how to handle this. Play your movie yourself.")
-    elif action == 'pause':
+            theHardWay(profile,text)
+    elif 'pause' in text.lower():
         #send pause command to Plex client
         # !! add ability to control multiple clients
         # !! add intelligence to know if something is actually playing
         urllib2.urlopen('http://' + str(profile['PlexClients']["selfIP"]) + ':' + str(profile['PlexClients']["selfPort"]) + '/player/playback/pause')
-    elif action == 'stop':
+    elif 'stop' in text.lower():
         #send stop command to Plex client
         # !! add ability to control multiple clients
         # !! add intelligence to know if something is actually playing
         urllib2.urlopen('http://' + str(profile['PlexClients']["selfIP"]) + ':' + str(profile['PlexClients']["selfPort"]) + '/player/playback/stop')
-    elif action == 'rewind':
+    elif 'rewind' in text.lower():
         urllib2.urlopen('http://' + str(profile['PlexClients']["selfIP"]) + ':' + str(profile['PlexClients']["selfPort"]) + '/player/playback/stepBack')
+    else:
+        mic.say('E',"I'm sorry I don't know how to help you with that.")
 
 def isValid(text):
     """

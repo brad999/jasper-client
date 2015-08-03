@@ -3,6 +3,8 @@ import smtplib
 from email.MIMEText import MIMEText
 import urllib2
 import re
+import logging
+import requests
 from pytz import timezone
 
 
@@ -159,6 +161,43 @@ def text2int(textnum, numwords={}):
             current = 0
 
     return result + current
+
+def determineIntent(profile, input):
+    logger = logging.getLogger(__name__)
+    if (len(input) == 0):
+       return {}
+
+    parameters = {"q" : input.lower()}
+    headers = {'Authorization': 'Bearer %s' % profile['witai-stt']['access_token'],
+                     'accept': 'application/json'}
+    r = requests.post('https://api.wit.ai/message?v=20150611',
+                  headers=headers,
+                  params=parameters)
+
+    try:
+        r.raise_for_status()
+        text = r.json()['outcomes']
+        logger.info(len(r.json()["outcomes"]))
+    except requests.exceptions.HTTPError:
+        logger.critical('Request failed with response: %r',
+                              r.text,
+                              exc_info=True)
+        return []
+    except requests.exceptions.RequestException:
+        logger.critical('Request failed.', exc_info=True)
+        return []
+    except ValueError as e:
+        logger.critical('Cannot parse response: %s',
+                              e.args[0])
+        return []
+    except KeyError:
+        logger.critical('Cannot parse response.',
+                              exc_info=True)
+        return []
+    else:
+        transcribed = text[0]
+        logger.info('Intent: %r', transcribed)
+        return transcribed
 
 def getTimezone(profile):
     """
