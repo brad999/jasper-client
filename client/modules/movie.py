@@ -16,6 +16,7 @@ from client import app_utils
 
 WORDS = ["MOVIE", "HOME", "THEATER", "COMEDY", "DRAMA", "ROMANTIC", "LOVE", "ROMANCE", "ACTION", "THRILLER", "SCARY", "MYSTERY", "CRIME", "FUNNY", "YES", "NO"]
 
+PRIORITY = 3
 
 def handle(text, mic, profile):
     """

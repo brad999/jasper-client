@@ -12,8 +12,9 @@ Author:         Brad Ahlers (github - brad999)
 import random, urllib2, json, re, sqlite3, operator
 from client import app_utils
 
-WORDS = ["PLEX","PLAY","PAUSE","STOP","YES", "NO", "REWIND"]
+WORDS = ["PLEX","PLAY","PAUSE","STOP","YES", "NO", "REWIND", "PAWS"]
 
+PRIORITY = 4
 
 def handle(text, mic, profile):
     """
@@ -56,6 +57,11 @@ def handle(text, mic, profile):
             cur.execute(sql)
 
             tempMovies = cur.fetchall()
+            print tempMovies
+
+            #if only one result found in SQL, return it
+            if len(tempMovies) == 1:
+                return tempMovies
 
             #convert words to numbers before checking match
             words = app_utils.convertNumberWords(movie.lower())
@@ -65,10 +71,6 @@ def handle(text, mic, profile):
                     it = iter(x)
                     tempMovie = zip(it,it)
                     return tempMovie
-
-            #if only one result found in SQL, return it
-            if len(tempMovies) == 1:
-                return tempMovies
 
             #loop over titles searching for best match one word at a time
             found = 'false'
@@ -136,7 +138,7 @@ def handle(text, mic, profile):
                 #verify movie choice
                 mic.say('A',"Would you like to play " + str(movie[0][0]) + "?")
                 if app_utils.YesOrNo(mic.activeListen()):
-                    mic.say('I',"Now playing" + str(movie[0][0]) + "...")
+                    mic.say('I',"Now playing " + str(movie[0][0]) + "...")
                 else:
                     mic.say('A',"Would you like me to try again or quit?")
                     choice = mic.activeListen()
@@ -162,7 +164,7 @@ def handle(text, mic, profile):
                     movie = json.loads(json.dumps(intent))['entities']['title'][0]['value']
                     movieID = findMovie(movie)
                     playMovie(movieID)
-                    mic.say('I',"Now playing" + str(movie) + "...")
+                    mic.say('I',"Now playing " + str(movie) + "...")
                 else:
                     theHardWay(profile,text)
             else:
@@ -170,7 +172,7 @@ def handle(text, mic, profile):
         # if no intent is found, do it the hard way
         else:
             theHardWay(profile,text)
-    elif 'pause' in text.lower():
+    elif 'pause' in text.lower() or 'paws' in text.lower():
         #send pause command to Plex client
         # !! add ability to control multiple clients
         # !! add intelligence to know if something is actually playing
@@ -191,4 +193,4 @@ def isValid(text):
         Arguments:
         text -- user-input, typically transcribed speech
     """
-    return bool(re.search(r'\b(plex|play|pause|stop|rewind)\b', text, re.IGNORECASE))
+    return bool(re.search(r'\b(plex|play|pause|stop|rewind|paws)\b', text, re.IGNORECASE))
