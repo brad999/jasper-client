@@ -1,14 +1,21 @@
 """
 Texting module
+
 Name:            text.py
-Description:     Sends text message to designated recipient. Responds to "text" or "tell"
+
+Description:     Sends text message to designated recipient.
+                 Responds to "text" or "tell"
+
 Dependencies:    Gmail, Contacts list
+
 Author:          Brad Ahlers (github - brad999)
 """
-import re, smtplib, yaml
+import re
+import yaml
 from client import nikitapath, app_utils
 
 WORDS = ["TEXT", "TELL"]
+
 
 def handle(text, mic, profile):
     """
@@ -17,43 +24,46 @@ def handle(text, mic, profile):
         Arguments:
         text -- user-input, typically transcribed speech
         mic -- used to interact with the user (for both input and output)
-        profile -- contains information related to the user (e.g., phone number)
+        profile -- contains information related to the user
     """
 
-    #determine recipient name and message
+    # determine recipient name and message
     # !! add logic to check if name was provided but no message
-    if re.search("(text|tell) (\w+) (.*)",text, re.IGNORECASE):
-        x = re.search("(text|tell) (\w+) (.*)",text, re.IGNORECASE)
+    if re.search("(text|tell) (\w+) (.*)", text, re.IGNORECASE):
+        x = re.search("(text|tell) (\w+) (.*)", text, re.IGNORECASE)
         name = x.group(2)
         message = x.group(3)
     else:
-        mic.say('A',"Who would you like to text?")
+        mic.say('A', "Who would you like to text?")
         name = mic.activeListen()
-        mic.say('A',"What would you like to tell " + name + "?")
+        mic.say('A', "What would you like to tell " + name + "?")
         message = mic.activeListen()
 
-    #check for recipient number in contacts.yml
-    f = open(nikitapath.data('text','CONTACTS.yml'))
+    # check for recipient number in contacts.yml
+    f = open(nikitapath.data('text', 'CONTACTS.yml'))
     contacts = yaml.safe_load(f)
     recipientNumber = str(contacts[name.lower()])
     f.close()
     if recipientNumber:
-        #check for a message
+        # check for a message
         if message:
-            #format message properly
+            # format message properly
             message = app_utils.convertPunctuation(message.lower())
-            #confirm message and recipient before sending
-            mic.say('A',"Are you sure you would like to tell " + name + ", " + message + "?")
+            # confirm message and recipient before sending
+            mic.say('A', "Are you sure you would like to tell " +
+                    name + ", " + message + "?")
             if app_utils.YesOrNo(mic.activeListen()):
-                #send text message
-                app_utils.sendTextMsg(profile,recipientNumber,message)
-                mic.say('A',"Message has been sent to " + name + ".")
+                # send text message
+                app_utils.sendTextMsg(profile, recipientNumber, message)
+                mic.say('A', "Message has been sent to " + name + ".")
             else:
-                mic.say('A',"Message was not sent.")
+                mic.say('A', "Message was not sent.")
         else:
-            mic.say('A',"I'm sorry. I didn't understand that message")
+            mic.say('A', "I'm sorry. I didn't understand that message")
     else:
-        mic.say('A',"I'm sorry. I could not find " + name + " in my address book.")
+        mic.say('A', "I'm sorry. I could not find " +
+                name + " in my address book.")
+
 
 def isValid(text):
     """

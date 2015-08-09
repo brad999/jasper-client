@@ -25,16 +25,16 @@ def handle(text, mic, profile):
     try:
         results = graph.request("me/notifications")
     except facebook.GraphAPIError:
-        mic.say('A',"I have not been authorized to query your Facebook. If you " +
-                "would like to check your notifications in the future, " +
-                "please visit the Nikita dashboard.")
+        mic.say('A', "I have not been authorized to query your Facebook. " +
+                "If you would like to check your notifications in " +
+                "the future, please visit the Nikita dashboard.")
         return
     except:
-        mic.say('A',
-            "I apologize, there's a problem with that service at the moment.")
+        mic.say('A', "I apologize, there's a problem with " +
+                "that service at the moment.")
 
     if not len(results['data']):
-        mic.say('I',"You have no Facebook notifications. ")
+        mic.say('I', "You have no Facebook notifications. ")
         return
 
     updates = []
@@ -42,7 +42,7 @@ def handle(text, mic, profile):
         updates.append(notification['title'])
 
     count = len(results['data'])
-    mic.say('I',"You have " + str(count) +
+    mic.say('I', "You have " + str(count) +
             " Facebook notifications. " + " ".join(updates) + ". ")
 
     return

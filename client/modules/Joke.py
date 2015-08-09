@@ -43,13 +43,13 @@ def handle(text, mic, profile):
     """
     joke = getRandomJoke()
 
-    mic.say('A',"Knock knock")
+    mic.say('A', "Knock knock")
 
     def firstLine(text):
-        mic.say('A',joke[0])
+        mic.say('A', joke[0])
 
         def punchLine(text):
-            mic.say('A',joke[1])
+            mic.say('A', joke[1])
 
         punchLine(mic.activeListen())
 

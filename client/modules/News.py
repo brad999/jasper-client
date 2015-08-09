@@ -5,7 +5,6 @@ import re
 from semantic.numbers import NumberService
 
 WORDS = ["NEWS", "YES", "NO", "FIRST", "SECOND", "THIRD"]
-
 PRIORITY = 3
 
 URL = 'http://news.ycombinator.com'
@@ -44,7 +43,7 @@ def handle(text, mic, profile):
         profile -- contains information related to the user (e.g., phone
                    number)
     """
-    mic.say('A',"Pulling up the news")
+    mic.say('A', "Pulling up the news")
     articles = getTopArticles(maxResults=3)
     titles = [" ".join(x.title.split(" - ")[:-1]) for x in articles]
     all_titles = "... ".join(str(idx + 1) + ")" +
@@ -64,7 +63,7 @@ def handle(text, mic, profile):
         send_all = not chosen_articles and app_utils.isPositive(text)
 
         if send_all or chosen_articles:
-            mic.say('A',"Sure, just give me a moment")
+            mic.say('A', "Sure, just give me a moment")
 
             if profile['prefers_email']:
                 body = "<ul>"
@@ -87,10 +86,10 @@ def handle(text, mic, profile):
                     else:
                         if not app_utils.emailUser(profile, SUBJECT="",
                                                    BODY=article_link):
-                            mic.say('A',"I'm having trouble sending you these " +
-                                    "articles. Please make sure that your " +
-                                    "phone number and carrier are correct " +
-                                    "on the dashboard.")
+                            mic.say('A', "I'm having trouble sending you " +
+                                    "these articles. Please make sure that " +
+                                    "your phone number and carrier are " +
+                                    "correct on the dashboard.")
                             return
 
             # if prefers email, we send once, at the end
@@ -99,26 +98,25 @@ def handle(text, mic, profile):
                 if not app_utils.emailUser(profile,
                                            SUBJECT="Your Top Headlines",
                                            BODY=body):
-                    mic.say('A',"I'm having trouble sending you these articles. " +
-                            "Please make sure that your phone number and " +
-                            "carrier are correct on the dashboard.")
+                    mic.say('A', "I'm having trouble sending you these " +
+                            "articles. Please make sure that your phone " +
+                            "number & carrier are correct on the dashboard.")
                     return
 
-            mic.say('A',"All set")
+            mic.say('A', "All set")
 
         else:
 
-            mic.say('A',"OK I will not send any articles")
+            mic.say('A', "OK I will not send any articles")
 
     if 'phone_number' in profile:
-        mic.say('A',"Here are the current top headlines. " + all_titles +
+        mic.say('A', "Here are the current top headlines. " + all_titles +
                 ". Would you like me to send you these articles? " +
                 "If so, which?")
         handleResponse(mic.activeListen())
 
     else:
-        mic.say('I',
-            "Here are the current top headlines. " + all_titles)
+        mic.say('I', "Here are the current top headlines. " + all_titles)
 
 
 def isValid(text):

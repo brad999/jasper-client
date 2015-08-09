@@ -54,7 +54,7 @@ def handle(text, mic, profile):
         profile -- contains information related to the user (e.g., phone
                    number)
     """
-    mic.say('A',"Pulling up some stories.")
+    mic.say('A', "Pulling up some stories.")
     stories = getTopStories(maxResults=3)
     all_titles = '... '.join(str(idx + 1) + ") " +
                              story.title for idx, story in enumerate(stories))
@@ -73,7 +73,7 @@ def handle(text, mic, profile):
         send_all = not chosen_articles and app_utils.isPositive(text)
 
         if send_all or chosen_articles:
-            mic.say('A',"Sure, just give me a moment")
+            mic.say('A', "Sure, just give me a moment")
 
             if profile['prefers_email']:
                 body = "<ul>"
@@ -96,10 +96,10 @@ def handle(text, mic, profile):
                     else:
                         if not app_utils.emailUser(profile, SUBJECT="",
                                                    BODY=article_link):
-                            mic.say('A',"I'm having trouble sending you these " +
-                                    "articles. Please make sure that your " +
-                                    "phone number and carrier are correct " +
-                                    "on the dashboard.")
+                            mic.say('A', "I'm having trouble sending you " +
+                                    "these articles. Please make sure that " +
+                                    "your phone number and carrier are " +
+                                    "correct on the dashboard.")
                             return
 
             # if prefers email, we send once, at the end
@@ -109,24 +109,25 @@ def handle(text, mic, profile):
                                            SUBJECT="From the Front Page of " +
                                                    "Hacker News",
                                            BODY=body):
-                    mic.say('A',"I'm having trouble sending you these articles. " +
-                            "Please make sure that your phone number and " +
-                            "carrier are correct on the dashboard.")
+                    mic.say('A', "I'm having trouble sending you these " +
+                            "articles. Please make sure that your " +
+                            "phone number and carrier are correct " +
+                            "on the dashboard.")
                     return
 
-            mic.say('A',"All done.")
+            mic.say('A', "All done.")
 
         else:
-            mic.say('A',"OK I will not send any articles")
+            mic.say('A', "OK I will not send any articles")
 
     if not profile['prefers_email'] and profile['phone_number']:
-        mic.say('I',"Here are some front-page articles. " +
+        mic.say('I', "Here are some front-page articles. " +
                 all_titles + ". Would you like me to send you these? " +
                 "If so, which?")
         handleResponse(mic.activeListen())
 
     else:
-        mic.say('A',"Here are some front-page articles. " + all_titles)
+        mic.say('A', "Here are some front-page articles. " + all_titles)
 
 
 def isValid(text):

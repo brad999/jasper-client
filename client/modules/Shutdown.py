@@ -7,7 +7,8 @@ Dependencies:	Must run Nikita as root
 Author:         Brad Ahlers (github - brad999)
 """
 
-import os, re
+import os
+import re
 
 WORDS = ["SHUTDOWN", "YES", "NO", "SHUT", "DOWN"]
 
@@ -19,20 +20,21 @@ def handle(text, mic, profile):
         Arguments:
         text -- user-input, typically transcribed speech
         mic -- used to interact with the user (for both input and output)
-        profile -- contains information related to the user (e.g., phone number)
+        profile -- contains information related to the user
     """
 
     def handleResponse(text):
         if 'no' in text.lower():
-            mic.say('A',"Alright, I will stay alive.")
+            mic.say('A', "Alright, I will stay alive.")
         elif 'yes' in text.lower():
-            mic.say('A',"It was nice knowing you. Good bye.")
+            mic.say('A', "It was nice knowing you. Good bye.")
             os.system("shutdown -h now")
         else:
-            mic.say('A',"I did not get that so I will stay alive.")
+            mic.say('A', "I did not get that so I will stay alive.")
 
-    mic.say('A',"Are you sure you want me to die?")
+    mic.say('A', "Are you sure you want me to die?")
     handleResponse(mic.activeListen())
+
 
 def isValid(text):
     """

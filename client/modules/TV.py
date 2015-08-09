@@ -2,13 +2,15 @@
 TV module
 
 Name:           TV.py
-Description: 	responds to common TV commands (turn up/down volume, change input, turn on/off, etc)
-Dependencies:	python-cec library
-		CEC compatible TV and controller (Raspberry Pi)
+Description:    responds to common TV commands (turn up/down volume,
+                    change input, turn on/off, etc)
+Dependencies:   python-cec library
+                CEC compatible TV and controller (Raspberry Pi)
 Author:         Brad Ahlers (github - brad999)
 """
 
-import cec, re
+import cec
+import re
 
 WORDS = ["VOLUME", "UP", "DOWN", "TV", "TELEVISION", "POWER", "ON", "OFF"]
 
@@ -20,7 +22,7 @@ def handle(text, mic, profile):
         Arguments:
         text -- user-input, typically transcribed speech
         mic -- used to interact with the user (for both input and output)
-        profile -- contains information related to the user (e.g., phone number)
+        profile -- contains information related to the user
     """
     cec.init()
     tv = cec.Device(0)
@@ -28,12 +30,12 @@ def handle(text, mic, profile):
     # !! add volume and mute functions
     if 'on' in text.lower():
         tv.power_on()
-        mic.say('I',"TV powered on.")
+        mic.say('I', "TV powered on.")
     elif 'off' in text.lower() or 'off' in text.lower():
         tv.standby()
-        mic.say('I',"TV powered off.")
+        mic.say('I', "TV powered off.")
     else:
-        mic.say('A',"I'm sorry that command is not currently supported")
+        mic.say('A', "I'm sorry that command is not currently supported")
 
 
 def isValid(text):

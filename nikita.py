@@ -23,7 +23,8 @@ parser.add_argument('--no-network-check', action='store_true',
 parser.add_argument('--diagnose', action='store_true',
                     help='Run diagnose and exit')
 parser.add_argument('--debug', action='store_true', help='Show debug messages')
-parser.add_argument('--test', action='store_true', help='Display messages instead of logging')
+parser.add_argument('--test', action='store_true',
+                    help='Display messages instead of logging')
 args = parser.parse_args()
 
 if args.local:
@@ -110,8 +111,11 @@ class Nikita(object):
                            "to '%s'", tts_engine_slug)
         tts_engine_class = tts.get_engine_by_slug(tts_engine_slug)
 
-        #connect to MySQL server
-        db = MySQLdb.connect(host=self.config['MySQL']['server'], port=3306, user=self.config['MySQL']['user'], passwd=self.config['MySQL']['password'], db="NIKITA")
+        # connect to MySQL server
+        db = MySQLdb.connect(host=self.config['MySQL']['server'],
+                             port=3306, user=self.config['MySQL']['user'],
+                             passwd=self.config['MySQL']['password'],
+                             db="NIKITA")
 
         # Initialize Mic
         self.mic = Mic(tts_engine_class.get_instance(),
@@ -124,7 +128,7 @@ class Nikita(object):
                           % self.config["first_name"])
         else:
             salutation = "How can I be of service?"
-        self.mic.say('A',salutation)
+        self.mic.say('A', salutation)
 
         conversation = Conversation("NIKITA", self.mic, self.config)
         conversation.handleForever()
@@ -134,10 +138,11 @@ if __name__ == "__main__":
         Nikita client/server edition
     """
 
-    #add new log level to logger for transcripts
-    #transcript is between 'WARNING' and 'INFO'
+    # add new log level to logger for transcripts
+    # transcript is between 'WARNING' and 'INFO'
     TRANS_LVL = 25
     logging.addLevelName(TRANS_LVL, "TRANSCRIPT")
+
     def transcript(self, message, *args, **kws):
         self._log(TRANS_LVL, message, args, **kws)
     logging.Logger.transcript = transcript
@@ -149,7 +154,8 @@ if __name__ == "__main__":
         print("**********************************************")
         logging.basicConfig()
     else:
-        logging.basicConfig(filename='/var/log/nikita/nikita.log', filemode='w', maxBytes='1024', backupCount='5')
+        logging.basicConfig(filename='/var/log/nikita/nikita.log',
+                            filemode='w', maxBytes='1024', backupCount='5')
     logger = logging.getLogger()
 
     if args.debug:

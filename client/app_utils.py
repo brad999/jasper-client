@@ -29,15 +29,21 @@ def sendEmail(SUBJECT, BODY, TO, FROM, SENDER, PASSWORD, SMTP_SERVER):
     session.sendmail(SENDER, TO, msg.as_string())
     session.quit()
 
-def sendTextMsg(profile,recipientNumber,message):
+
+def sendTextMsg(profile, recipientNumber, message):
     session = smtplib.SMTP('smtp.gmail.com', 587)
     session.starttls()
-    session.login(str(profile['gmail_address']), str(profile['gmail_password']))
-    session.sendmail(str(profile['gmail_address']), recipientNumber, message)
+    session.login(str(profile['gmail_address']),
+                  str(profile['gmail_password']))
+    session.sendmail(str(profile['gmail_address']),
+                     recipientNumber, message)
     session.quit()
 
+
 def YesOrNo(text):
-    return bool('ye' in text.lower() or 'sure' in text.lower() or 'please' in text.lower() or 'correct' in text.lower())
+    return bool('ye' in text.lower() or 'sure' in text.lower()
+                or 'please' in text.lower() or 'correct' in text.lower())
+
 
 def emailUser(profile, SUBJECT="", BODY=""):
     """
@@ -49,6 +55,7 @@ def emailUser(profile, SUBJECT="", BODY=""):
         SUBJECT -- subject line of the email
         BODY -- body text of the email
     """
+
     def generateSMSEmail(profile):
         """
         Generates an email from a user's phone number based on their carrier.
@@ -91,69 +98,74 @@ def emailUser(profile, SUBJECT="", BODY=""):
     except:
         return False
 
+
 def convertPunctuation(text):
-    #convert punctuation words to symbols
-    text = re.sub(' period','.',text,re.IGNORECASE)
-    text = re.sub(' question-mark','?',text,re.IGNORECASE)
-    text = re.sub(' question mark','?',text,re.IGNORECASE)
-    text = re.sub(' exclamation-point','!',text,re.IGNORECASE)
-    text = re.sub(' exclamation point','!',text,re.IGNORECASE)
+    # convert punctuation words to symbols
+    text = re.sub(' period', '.', text, re.IGNORECASE)
+    text = re.sub(' question-mark', '?', text, re.IGNORECASE)
+    text = re.sub(' question mark', '?', text, re.IGNORECASE)
+    text = re.sub(' exclamation-point', '!', text, re.IGNORECASE)
+    text = re.sub(' exclamation point', '!', text, re.IGNORECASE)
     # !! messaging doesn't like emoticons. will try to fix later
-    #text = re.sub('smiley face',':)',text,re.IGNORECASE)
-    #text = re.sub('happy face',':)',text,re.IGNORECASE)
-    #text = re.sub('sad face',':(',text,re.IGNORECASE)
-    #capitolize first word in sentence
+    # text = re.sub('smiley face',':)',text,re.IGNORECASE)
+    # text = re.sub('happy face',':)',text,re.IGNORECASE)
+    # text = re.sub('sad face',':(',text,re.IGNORECASE)
+
+    # capitolize first word in sentence
     text = re.split('([.!?] *)', text)
     text = ''.join([i.capitalize() for i in text])
     return text
 
+
 def convertNumberWords(text):
-    #convert number words to numeric form
-    text = re.sub('zero','0',text,re.IGNORECASE)
-    text = re.sub('one','1',text,re.IGNORECASE)
-    text = re.sub('two','2',text,re.IGNORECASE)
-    text = re.sub('three','3',text,re.IGNORECASE)
-    text = re.sub('four','4',text,re.IGNORECASE)
-    text = re.sub('five','5',text,re.IGNORECASE)
-    text = re.sub('six','6',text,re.IGNORECASE)
-    text = re.sub('seven','7',text,re.IGNORECASE)
-    text = re.sub('eight','8',text,re.IGNORECASE)
-    text = re.sub('nine','9',text,re.IGNORECASE)
-    text = re.sub('ten','10',text,re.IGNORECASE)
+    # convert number words to numeric form
+    text = re.sub('zero', '0', text, re.IGNORECASE)
+    text = re.sub('one', '1', text, re.IGNORECASE)
+    text = re.sub('two', '2', text, re.IGNORECASE)
+    text = re.sub('three', '3', text, re.IGNORECASE)
+    text = re.sub('four', '4', text, re.IGNORECASE)
+    text = re.sub('five', '5', text, re.IGNORECASE)
+    text = re.sub('six', '6', text, re.IGNORECASE)
+    text = re.sub('seven', '7', text, re.IGNORECASE)
+    text = re.sub('eight', '8', text, re.IGNORECASE)
+    text = re.sub('nine', '9', text, re.IGNORECASE)
+    text = re.sub('ten', '10', text, re.IGNORECASE)
     return text
 
+
 def convertOperators(text):
-    #convert operators to symbol form
-    text = re.sub('plus','+',text,re.IGNORECASE)
-    text = re.sub('added to','+',text,re.IGNORECASE)
-    text = re.sub('minus','-',text,re.IGNORECASE)
-    text = re.sub('divided by','/',text,re.IGNORECASE)
-    text = re.sub('multiplied by','*',text,re.IGNORECASE)
-    text = re.sub('times','*',text,re.IGNORECASE)
+    # convert operators to symbol form
+    text = re.sub('plus', '+', text, re.IGNORECASE)
+    text = re.sub('added to', '+', text, re.IGNORECASE)
+    text = re.sub('minus', '-', text, re.IGNORECASE)
+    text = re.sub('divided by', '/', text, re.IGNORECASE)
+    text = re.sub('multiplied by', '*', text, re.IGNORECASE)
+    text = re.sub('times', '*', text, re.IGNORECASE)
     return text
+
 
 def text2int(textnum, numwords={}):
     if not numwords:
-      units = [
-        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
-        "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
-        "sixteen", "seventeen", "eighteen", "nineteen",
-      ]
+        units = ["zero", "one", "two", "three", "four", "five", "six",
+                 "seven", "eight", "nine", "ten", "eleven", "twelve",
+                 "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+                 "eighteen", "nineteen"]
+        tens = ["", "", "twenty", "thirty", "forty", "fifty",
+                "sixty", "seventy", "eighty", "ninety"]
+        scales = ["hundred", "thousand", "million", "billion", "trillion"]
 
-      tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
-
-      scales = ["hundred", "thousand", "million", "billion", "trillion"]
-
-      numwords["and"] = (1, 0)
-      for idx, word in enumerate(units):    numwords[word] = (1, idx)
-      for idx, word in enumerate(tens):     numwords[word] = (1, idx * 10)
-      for idx, word in enumerate(scales):   numwords[word] = (10 ** (idx * 3 or 2), 0)
+        numwords["and"] = (1, 0)
+        for idx, word in enumerate(units):
+            numwords[word] = (1, idx)
+        for idx, word in enumerate(tens):
+            numwords[word] = (1, idx * 10)
+        for idx, word in enumerate(scales):
+            numwords[word] = (10 ** (idx * 3 or 2), 0)
 
     current = result = 0
     for word in textnum.split():
         if word not in numwords:
-          raise Exception("Illegal word: " + word)
-
+            raise Exception("Illegal word: " + word)
         scale, increment = numwords[word]
         current = current * scale + increment
         if scale > 100:
@@ -162,17 +174,18 @@ def text2int(textnum, numwords={}):
 
     return result + current
 
+
 def determineIntent(profile, input):
     logger = logging.getLogger(__name__)
     if (len(input) == 0):
-       return {}
+        return {}
 
-    parameters = {"q" : input.lower()}
-    headers = {'Authorization': 'Bearer %s' % profile['witai-stt']['access_token'],
-                     'accept': 'application/json'}
+    parameters = {"q": input.lower()}
+    headers = {'Authorization': 'Bearer %s' %
+               profile['witai-stt']['access_token'],
+               'accept': 'application/json'}
     r = requests.post('https://api.wit.ai/message?v=20150611',
-                  headers=headers,
-                  params=parameters)
+                      headers=headers, params=parameters)
 
     try:
         r.raise_for_status()
@@ -180,24 +193,25 @@ def determineIntent(profile, input):
         logger.info(len(r.json()["outcomes"]))
     except requests.exceptions.HTTPError:
         logger.critical('Request failed with response: %r',
-                              r.text,
-                              exc_info=True)
+                        r.text,
+                        exc_info=True)
         return []
     except requests.exceptions.RequestException:
         logger.critical('Request failed.', exc_info=True)
         return []
     except ValueError as e:
         logger.critical('Cannot parse response: %s',
-                              e.args[0])
+                        e.args[0])
         return []
     except KeyError:
         logger.critical('Cannot parse response.',
-                              exc_info=True)
+                        exc_info=True)
         return []
     else:
         transcribed = text[0]
         logger.info('Intent: %r', transcribed)
         return transcribed
+
 
 def getTimezone(profile):
     """

@@ -10,13 +10,12 @@ Dependencies:   WolframAlpha API (requires key)
 Author:         ajay-gandhi (github)
                 Brad Ahlers (github - brad999)
 """
-import random, re, wolframalpha, time, sys
-from sys import maxint
+import re
+import wolframalpha
 
-from client import jasperpath
 WORDS = ["WHO", "WHAT", "HOW", "TELL", "ME", "ABOUT", "WHEN", "DEFINE"]
-
 PRIORITY = -1
+
 
 def handle(text, mic, profile):
     app_id = profile['keys']['WolframAlpha']
@@ -28,16 +27,17 @@ def handle(text, mic, profile):
         pod = query.pods[1]
         if pod.text:
             texts = pod.text
-            #only get the first line of the response
-            #primarily used to remove multiple definitions
+            # only get the first line of the response
+            # primarily used to remove multiple definitions
             texts = texts.split("\n", 1)[0]
         else:
             texts = "I can not find anything"
 
-        mic.say('I',texts.replace("|",""))
+        mic.say('I', texts.replace("|", ""))
     else:
-        mic.say('A',"Sorry, Could you be more specific?.")
+        mic.say('A', "Sorry, Could you be more specific?.")
 
 
 def isValid(text):
-    return bool(re.search(r'\bwho|what|when|how|tell me|define\b', text, re.IGNORECASE))
+    return bool(re.search(r'\bwho|what|when|how|tell me|define\b',
+                text, re.IGNORECASE))

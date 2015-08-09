@@ -26,13 +26,13 @@ def handle(text, mic, profile):
         results = graph.request("me/friends",
                                 args={'fields': 'id,name,birthday'})
     except facebook.GraphAPIError:
-        mic.say('A',"I have not been authorized to query your Facebook. If you " +
-                "would like to check birthdays in the future, please visit " +
-                "the Nikita dashboard.")
+        mic.say('A', "I have not been authorized to query your Facebook. " +
+                "If you would like to check birthdays in the future, " +
+                "please visit the Nikita dashboard.")
         return
     except:
-        mic.say('A',
-            "I apologize, there's a problem with that service at the moment.")
+        mic.say('A', "I apologize, there's a problem " +
+                "with that service at the moment.")
         return
 
     needle = datetime.datetime.now(tz=getTimezone(profile)).strftime("%m/%d")
@@ -54,7 +54,7 @@ def handle(text, mic, profile):
     else:
         output = "None of your friends have birthdays today."
 
-    mic.say('I',output)
+    mic.say('I', output)
 
 
 def isValid(text):
