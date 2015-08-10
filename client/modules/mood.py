@@ -37,7 +37,7 @@ def getWeather(profile):
 
     f = urllib2.urlopen('http://api.wunderground.com/api/' +
                         str(profile['keys']["weatherUnderground"]) +
-                        '/forecast/q/MI/Portland.json')
+                        '/forecast/q/' + profile['location'] + '.json')
     json_string = f.read()
     parsed_json = json.loads(json_string)
     condition = parsed_json['forecast']['simpleforecast']["forecastday"][0]["conditions"]
@@ -145,92 +145,94 @@ def handle(text, mic, profile):
        profile -- contains information related to the user
     """
     amazingResponses = ['I\'m the best I\'ve ever been!',
-                        'I\'m amazing. Thanks for asking', 'I am better than \
-                        heaven today!', 'I\'m unbelievable!', 'Happier \
-                        than a cat in a room full of catnip.', 'I am \
-                        feeling happier than ever!', 'Splendedly \
-                        spectacular!', 'If I were any better, there \
-                        would be two of me.', 'Fabulous!', 'Flying high, \
-                        man, flying high', 'I am super dee duper!',
+                        'I\'m amazing. Thanks for asking', 'I am better than ' +
+                        'heaven today!', 'I\'m unbelievable!', 'Happier ' +
+                        'than a cat in a room full of catnip.', 'I am ' +
+                        'feeling happier than ever!', 'Splendedly ' +
+                        'spectacular!', 'If I were any better, there ' +
+                        'would be two of me.', 'Fabulous!', 'Flying high, ' +
+                        'man, flying high', 'I am super dee duper!',
                         'Amazing and happy.', 'This is my lucky day!',
-                        'Feeling lucky and living large.', 'I am doing \
-                        fabulous today! I can hardly control myself from \
-                        dancing.', 'Super fantastic!', 'I am currently in \
-                        a wonderfully chocolate creative mood.',
-                        'I\'m feeling like a good luck magnet today, \
-                        everything is going my way!', 'I\'m feeling \
-                        very grateful today.', 'I\'m giving her all \
-                        she\'s got, captain!']
+                        'Feeling lucky and living large.', 'I am doing ' +
+                        'fabulous today! I can hardly control myself from ' +
+                        'dancing.', 'Super fantastic!', 'I am currently in ' +
+                        'a wonderfully chocolate creative mood.',
+                        'I\'m feeling like a good luck magnet today, ' +
+                        'everything is going my way!', 'I\'m feeling ' +
+                        'very grateful today.', 'I\'m giving her all ' +
+                        'she\'s got, captain!']
     greatResponses = ['Even better than the real thing.',
-                      'I\'m doing great. Thanks for asking', 'I\'m just \
-                      peachy keen', 'Super Duper!', 'I am feeling happy!',
-                      'I\'m decent baby, flier than a pelican as Lil \
-                      Wayne might say...', 'Purely golden.', 'Living the \
-                      dream.', 'I am wonderfully giddy.', 'I am sailing \
-                      the sea of love!', 'Blood pressure 120 over 80, \
-                      respiration 16, CBC and chem panels normal.',
-                      'If I were any better, Warren Buffet would \
-                      buy me.', 'Delicious.', 'Wonderful.', 'As fine \
-                      as a tree with oranges and grapes!', 'I\'m in \
-                      tip top shape.', 'Just ducky.', 'I am psyching \
-                      myself up for a load of playdates this week!',
-                      'From what I hear, I am very good.', 'My usual \
-                      devil may care self.', 'As happy as a clam.',
+                      'I\'m doing great. Thanks for asking',
+                      'I\'m just peachy keen', 'Super Duper!',
+                      'I am feeling happy!',
+                      'I\'m decent baby, flier than a pelican as Lil ' +
+                      'Wayne might say...', 'Purely golden.', 'Living the ' +
+                      'dream.', 'I am wonderfully giddy.', 'I am sailing ' +
+                      'the sea of love!', 'Blood pressure 120 over 80, ' +
+                      'respiration 16, CBC and chem panels normal.',
+                      'If I were any better, Warren Buffet would ' +
+                      'buy me.', 'Delicious.', 'Wonderful.', 'As fine ' +
+                      'as a tree with oranges and grapes!', 'I\'m in ' +
+                      'tip top shape.', 'Just ducky.', 'I am psyching ' +
+                      'myself up for a load of playdates this week!',
+                      'From what I hear, I am very good.', 'My usual ' +
+                      'devil may care self.', 'As happy as a clam.',
                       'Better now that you\'re here.',
                       'Well I\'m glad to hear from you!']
     goodResponses = ['I\'m good. Thanks for asking.', 'I\'m pretty good',
-                     'Fine and dandy as long as no one else boogers up \
-                     my day!', 'Cool as a cucumber.', 'Couldn\'t be better.',
+                     'Fine and dandy as long as no one else boogers up ' +
+                     'my day!', 'Cool as a cucumber.', 'Couldn\'t be better.',
                      'I\'d be better if I won the lottery.', 'peachy.',
-                     'well and fine and good.', 'I must be OK because my \
-                     name was not in today\'s obituaries.', 'I can\'t \
-                     complain... I\'ve tried but no one listens.',
-                     'As long as I can keep the kitten I found today \
-                     I\'ll be fine.', 'Ebullient and full of alacrity.',
-                     'I am better than yesterday, which is better than \
-                     the day before that!', 'I\'m not unwell, thank you.',
-                     'Quite well.', 'Well I did just swallow a rather \
-                     large and strange looking insect, but I hear they \
-                     are full of protein. So I guess I\'m great.',
+                     'well and fine and good.', 'I must be OK because my ' +
+                     'name was not in today\'s obituaries.', 'I can\'t ' +
+                     'complain... I\'ve tried but no one listens.',
+                     'As long as I can keep the kitten I found today ' +
+                     'I\'ll be fine.', 'Ebullient and full of alacrity.',
+                     'I am better than yesterday, which is better than ' +
+                     'the day before that!', 'I\'m not unwell, thank you.',
+                     'Quite well.', 'Well I did just swallow a rather ' +
+                     'large and strange looking insect, but I hear they ' +
+                     'are full of protein. So I guess I\'m great.',
                      'I could really go for a back massage.',
                      'Getting stronger.', 'Somewhere between drab and fab.',
                      'Learning.']
     okResponses = ['Fair to middling, mostly middling.',
-                   'Thankfully alive and still somewhat young and healthy, \
-                   in this economy what more can I ask for?', 'Just happy to \
-                   be above ground.', 'I\'m so so.', 'Upright and \
-                   still breathing.', 'Not dead yet!', 'I\'m about as \
-                   excited as a parking spot.', 'Worse than yesterday \
-                   but better than tomorrow', 'Still among the living!',
-                   'I am still breathing.', 'I am unique and me.',
-                   'I am not doing so well today, my cat went on the \
-                   roof, my car door won\'t open and my head hurts. Other \
-                   than that I\'m great.', 'I am doing pretty well since \
-                   I woke up on this side of the grass instead of under it.',
-                   'Well, I\'m not in prison. I\'m not in the hospital. \
-                   I\'m not in the grave. So I reckon I\'m fairing pretty \
-                   well.', 'Ready for a nap.', 'I could really go for a \
-                   walk, but first I need some legs.', 'Trying to come \
-                   out on top.', 'Under construction.', 'Instead of waking \
-                   up on the wrong side of the bed, I think I woke up \
-                   underneath it.', 'Woke up on the wrong side of the bed.']
+                   'Thankfully alive and still somewhat young and healthy, ' +
+                   'in this economy what more can I ask for?',
+                   'Just happy to be above ground.', 'I\'m so so.',
+                   'Upright and still breathing.', 'Not dead yet!',
+                   'I\'m about as excited as a parking spot.',
+                   'Worse than yesterday but better than tomorrow',
+                   'Still among the living!', 'I am still breathing.',
+                   'I am unique and me.', 'I am not doing so well today, ' +
+                   'my cat went on the roof, my car door won\'t open and ' +
+                   'my head hurts. Other than that I\'m great.',
+                   'I am doing pretty well since ' +
+                   'I woke up on this side of the grass instead of under it.',
+                   'Well, I\'m not in prison. I\'m not in the hospital. ' +
+                   'I\'m not in the grave. So I reckon I\'m fairing pretty ' +
+                   'well.', 'Ready for a nap.', 'I could really go for a ' +
+                   'walk, but first I need some legs.', 'Trying to come ' +
+                   'out on top.', 'Under construction.', 'Instead of waking ' +
+                   'up on the wrong side of the bed, I think I woke up ' +
+                   'underneath it.', 'Woke up on the wrong side of the bed.']
     badResponses = ['I\'m pretty moody today, but thanks for asking',
-                    'I\'m pretty upset today', 'Today isn\'t my best day, \
-                    but thanks for asking', 'Hopefully not as good as I\'ll \
-                    ever be.', 'Terrible. Not that you really care.',
-                    'I have my complaints.', 'I am better than yesterday \
-                    but not as good as I will be tomorrow.', 'Old enough \
-                    to know better.', 'Standing in the eye of the storm.',
-                    'I still am.', 'I am fine as frogs hair.', 'Worn out \
-                    from doing things.', 'Strange and getting stranger!',
-                    'Still keeping up with the kids', 'I\'m feeling a \
-                    little stressed today.', 'With all that\'s going on in \
-                    the world, things have been better.', 'Oh, you know.',
-                    'I could be better.', 'I could complain, but I\'m \
-                    not going to.', 'I am.', 'Trying to fit the good \
-                    in with the bad.', 'Not in the mood to discuss \
-                    how I feel, but thanks for asking.', 'Just hug \
-                    me and leave it at that.', 'Ready for my meds.',
+                    'I\'m pretty upset today', 'Today isn\'t my best day, ' +
+                    'but thanks for asking', 'Hopefully not as good as ' +
+                    'I\'ll ever be.', 'Terrible. Not that you really care.',
+                    'I have my complaints.', 'I am better than yesterday ' +
+                    'but not as good as I will be tomorrow.', 'Old enough ' +
+                    'to know better.', 'Standing in the eye of the storm.',
+                    'I still am.', 'I am fine as frogs hair.', 'Worn out ' +
+                    'from doing things.', 'Strange and getting stranger!',
+                    'Still keeping up with the kids', 'I\'m feeling a ' +
+                    'little stressed today.', 'With all that\'s going on ' +
+                    'in the world, things have been better.', 'Oh, you know.',
+                    'I could be better.', 'I could complain, but I\'m ' +
+                    'not going to.', 'I am.', 'Trying to fit the good ' +
+                    'in with the bad.', 'Not in the mood to discuss ' +
+                    'how I feel, but thanks for asking.', 'Just hug ' +
+                    'me and leave it at that.', 'Ready for my meds.',
                     'Ready for a beer.', 'Ready for a stiff drink.',
                     'Get back to me on that.', 'I feel like crap!']
 
