@@ -40,7 +40,8 @@ def getWeather(profile):
                         '/forecast/q/' + profile['location'] + '.json')
     json_string = f.read()
     parsed_json = json.loads(json_string)
-    condition = parsed_json['forecast']['simpleforecast']["forecastday"][0]["conditions"]
+    condition = (parsed_json['forecast']['simpleforecast']
+                 ["forecastday"][0]["conditions"])
     condition = condition.lower()
 
     if condition in OKConditions:
@@ -145,8 +146,9 @@ def handle(text, mic, profile):
        profile -- contains information related to the user
     """
     amazingResponses = ['I\'m the best I\'ve ever been!',
-                        'I\'m amazing. Thanks for asking', 'I am better than ' +
-                        'heaven today!', 'I\'m unbelievable!', 'Happier ' +
+                        'I\'m amazing. Thanks for asking',
+                        'I am better than heaven today!',
+                        'I\'m unbelievable!', 'Happier ' +
                         'than a cat in a room full of catnip.', 'I am ' +
                         'feeling happier than ever!', 'Splendedly ' +
                         'spectacular!', 'If I were any better, there ' +
@@ -268,4 +270,5 @@ def isValid(text):
         text -- user-input, typically transcribed speech
     """
     return bool(re.search(r'\b(how are you today|how is it going|' +
-                          r'how are you|how\'s it going)\b', text, re.IGNORECASE))
+                          r'how are you|how\'s it going)\b',
+                          text, re.IGNORECASE))

@@ -43,13 +43,15 @@ def handle(text, mic, profile):
         mic -- used to interact with the user (for both input and output)
         profile -- contains information related to the user
     """
+
     f = urllib2.urlopen('http://api.wunderground.com/api/' +
                         str(profile['keys']["weatherUnderground"]) +
                         '/forecast/q/' + profile['location'] + '.json')
     json_string = f.read()
     parsed_json = json.loads(json_string)
 
-    currentWeather = parsed_json['forecast']['txt_forecast']['forecastday'][0]['fcttext']
+    currentWeather = (parsed_json['forecast']['txt_forecast']
+                      ['forecastday'][0]['fcttext'])
 
     if currentWeather:
         currentWeather = replaceAcronyms(currentWeather)

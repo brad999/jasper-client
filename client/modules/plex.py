@@ -190,8 +190,11 @@ def handle(text, mic, profile):
         if intent:
             # check intent (play, stop, rewind, etc)
             if json.loads(json.dumps(intent))['intent'] == 'query_movie':
-                if json.loads(json.dumps(intent))['entities']['title'][0]['suggested']:
-                    movie = json.loads(json.dumps(intent))['entities']['title'][0]['value']
+                witSuggestion = (json.loads(json.dumps(intent))['entities']
+                                 ['title'][0]['suggested'])
+                if witSuggestion:
+                    movie = (json.loads(json.dumps(intent))['entities']
+                             ['title'][0]['value'])
                     movieID = findMovie(movie)
                     playMovie(movieID)
                     mic.say('I', "Now playing " + str(movie) + "...")
