@@ -64,6 +64,17 @@ def handle(text, mic, profile):
         try:
             dbCon = sqlite3.connect('/home/pi/com.plexapp.plugins.library.db')
 
+            # add wildcard before 's'
+            temp = ""
+            for x in movie.split(' '):
+                if x[-1:] == 's':
+                    x = x[:-1] + '%' + 's'
+                if temp == "":
+                    temp = x
+                else:
+                    temp = temp + ' ' + x
+            movie = temp
+
             # select any movie titles that contain the first word
             sql = "SELECT title, id \
                    FROM metadata_items \

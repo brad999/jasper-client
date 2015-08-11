@@ -20,6 +20,7 @@ def getWeather(profile, day):
 
     return ""
 
+
 def getExtendedWeather(profile, day):
     f = urllib2.urlopen('http://api.wunderground.com/api/' +
                         str(profile['keys']["weatherUnderground"]) +
@@ -33,12 +34,14 @@ def getExtendedWeather(profile, day):
 
     return ""
 
+
 def sayWeather(mic, weather):
     if weather:
         weather = replaceAcronyms(weather)
         mic.say('I', weather)
     else:
         mic.say('A', "I'm sorry, I can't seem to access that information.")
+
 
 def dayOfWeek(dayInt):
     """
@@ -59,6 +62,7 @@ def dayOfWeek(dayInt):
         return "Saturday"
     elif dayInt == 6:
         return "Sunday"
+
 
 def replaceAcronyms(text):
     """
