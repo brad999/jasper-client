@@ -14,14 +14,17 @@ Author:         Brad Ahlers (github - brad999)
 import re
 import json
 import urllib2
+from client import app_utils
 
-WORDS = ["TRAFFIC", "CRASHES", "ACCIDENTS", "COMMUTE", "HOW", "LONG", "DOES", "IT", "TAKE", "TO", "GET", "WORK"]
+WORDS = ["TRAFFIC", "CRASHES", "ACCIDENTS", "COMMUTE", "HOW", "LONG",
+         "DOES", "IT", "TAKE", "TO", "GET", "WORK"]
 
 
-def getTraffic(profile):
+def getTraffic(profile, db):
     f = urllib2.urlopen('http://dev.virtualearth.net/REST/v1/Traffic' +
                         '/Incidents/' + str(profile['TrafficArea']) +
                         '?key=' + profile['keys']["BingMaps"])
+    app_utils.updateAPITracker(db, 'Bing Maps')
     json_string = f.read()
     parsed_json = json.loads(json_string)
 
@@ -33,10 +36,11 @@ def getTraffic(profile):
     return incidences
 
 
-def getTravelTime(profile, origin, destination):
+def getTravelTime(profile, db, origin, destination):
     f = urllib2.urlopen('http://dev.virtualearth.net/REST/V1/Routes?wp.0=' +
                         origin + '&wp.1=' + destination + '&key=' +
                         profile['keys']["BingMaps"])
+    app_utils.updateAPITracker(db, 'Bing Maps')
     json_string = f.read()
     parsed_json = json.loads(json_string)
 
@@ -58,8 +62,9 @@ def handle(text, mic, profile):
         profile -- contains information related to the user
     """
 
-    if 'how long does it take to get to work' in text.lower():
-        travelTime = getTravelTime(profile,
+    if 'how long does it take to get to work' in text.lower() \
+       or 'travel time' in text.lower():
+        travelTime = getTravelTime(profile, mic.db,
                                    profile['locations']['home'],
                                    profile['locations']['work'])
 
@@ -68,7 +73,7 @@ def handle(text, mic, profile):
         else:
             mic.say('A', "I am currently unable to retrieve this information")
     else:
-        incidences = ' '.join(getTraffic(profile))
+        incidences = ' '.join(getTraffic(profile, mic.db))
         if incidences:
             mic.say('I', incidences)
         else:

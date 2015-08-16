@@ -18,12 +18,13 @@ import random
 import urllib2
 import json
 import re
+from client import app_utils
 
 WORDS = ["HOW", "ARE", "YOU", "TODAY", "IS", "IT", "GOING", "HOW\'S"]
 PRIORITY = 5
 
 
-def getWeather(profile):
+def getWeather(db, profile):
     """
     Gets weather conditions using Weather Underground API and
     returns rating on a 1-5 scale (1 being the best)
@@ -38,6 +39,7 @@ def getWeather(profile):
     f = urllib2.urlopen('http://api.wunderground.com/api/' +
                         str(profile['keys']["weatherUnderground"]) +
                         '/forecast/q/' + profile['location'] + '.json')
+    app_utils.updateAPITracker(db, 'Weather Underground')
     json_string = f.read()
     parsed_json = json.loads(json_string)
     condition = (parsed_json['forecast']['simpleforecast']
@@ -88,7 +90,7 @@ def getStock():
     return stock
 
 
-def getNews(profile):
+def getNews(db, profile):
     """
     Gets news article titles, search them for keywords, and returns
     ratings on a 1-5 scale (1 being the best)
@@ -105,6 +107,7 @@ def getNews(profile):
     f = urllib2.urlopen('http://api.usatoday.com/open/articles/topnews' +
                         '?encoding=json&api_key=' +
                         str(profile['keys']["USAToday"]))
+    app_utils.updateAPITracker(db, 'USA Today')
     content = f.read()
     parsed_json = json.loads(content)
 
@@ -240,9 +243,9 @@ def handle(text, mic, profile):
 
     # Get conditions that determine mood.
     # Values returned are integars (1-5, with 1 being the best)
-    weather = getWeather(profile)
+    weather = getWeather(mic.db, profile)
     stock = getStock()
-    news = getNews(profile)
+    news = getNews(mic.db, profile)
 
     # Average conditions
     moodScale = (weather + stock + news)/3

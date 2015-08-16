@@ -5,6 +5,7 @@ import urllib2
 import re
 import logging
 import requests
+import datetime
 from pytz import timezone
 
 
@@ -28,6 +29,16 @@ def sendEmail(SUBJECT, BODY, TO, FROM, SENDER, PASSWORD, SMTP_SERVER):
     session.login(FROM, PASSWORD)
     session.sendmail(SENDER, TO, msg.as_string())
     session.quit()
+
+
+def updateAPITracker(db, API):
+    strDate = datetime.date.today().strftime('%m-%Y')
+    db_cursor = db.cursor()
+    SQL = "UPDATE API_Usage \
+           SET call_count = call_count + 1 \
+           WHERE month = \'" + strDate + "\' and API = \'" + API + "\'"
+    db_cursor.execute(SQL)
+    db.commit()
 
 
 def sendTextMsg(profile, recipientNumber, message):

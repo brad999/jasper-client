@@ -12,6 +12,7 @@ Author:         ajay-gandhi (github)
 """
 import re
 import wolframalpha
+from client import app_utils
 
 WORDS = ["WHO", "WHAT", "HOW", "TELL", "ME", "ABOUT", "WHEN", "DEFINE"]
 PRIORITY = -1
@@ -22,6 +23,8 @@ def handle(text, mic, profile):
     client = wolframalpha.Client(app_id)
 
     query = client.query(text)
+    app_utils.updateAPITracker(mic.db, 'WolframAlpha')
+
     if len(query.pods) > 0:
         texts = ""
         pod = query.pods[1]

@@ -129,11 +129,12 @@ def handle(text, mic, profile):
 
         return selections
 
-    def queryTheater():
+    def queryTheater(db):
         # Retrieves top rated and most recently released movies
         f = urllib2.urlopen('http://api.rottentomatoes.com/api/public/v1.0/' +
                             'lists/movies/in_theaters.json?apikey=' +
                             str(profile['keys']["rottenTomatoes"]))
+        app_utils.updateAPITracker(db, 'Rotten Tomatoes')
         content = f.read()
         parsed_json = json.loads(content)
 
@@ -178,7 +179,7 @@ def handle(text, mic, profile):
                         " would also be good. I hope this was helpful.")
 
     elif location == 'theater':
-        highestRated, recentRelease = queryTheater()
+        highestRated, recentRelease = queryTheater(mic.db)
         words = "The top three rated movies currently showing in theaters " + \
                 "are " + highestRated[0][0] + ", " + highestRated[1][0] + \
                 ", and " + highestRated[2][0] + ". The most recently " + \

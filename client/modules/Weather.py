@@ -3,14 +3,16 @@ import re
 import json
 import urllib2
 import datetime
+from client import app_utils
 
 WORDS = ["WEATHER", "TODAY", "TOMORROW"]
 
 
-def getWeather(profile, day):
+def getWeather(profile, db, day):
     f = urllib2.urlopen('http://api.wunderground.com/api/' +
                         str(profile['keys']["weatherUnderground"]) +
                         '/forecast/q/' + profile['location'] + '.json')
+    app_utils.updateAPITracker(db, 'Weather Underground')
     json_string = f.read()
     parsed_json = json.loads(json_string)
 
@@ -21,10 +23,11 @@ def getWeather(profile, day):
     return ""
 
 
-def getExtendedWeather(profile, day):
+def getExtendedWeather(profile, db, day):
     f = urllib2.urlopen('http://api.wunderground.com/api/' +
                         str(profile['keys']["weatherUnderground"]) +
                         '/forecast10day/q/' + profile['location'] + '.json')
+    app_utils.updateAPITracker(db, 'Weather Underground')
     json_string = f.read()
     parsed_json = json.loads(json_string)
 
@@ -106,68 +109,69 @@ def handle(text, mic, profile):
         today = datetime.date.today().weekday()
         nextDay = today + 1
         tomorrow = dayOfWeek(nextDay)
-        tomorrowWeather = getWeather(profile, tomorrow)
+        tomorrowWeather = getWeather(profile, mic.db, tomorrow)
         sayWeather(mic, tomorrowWeather)
     # Tonight's weather
     elif 'tonight' in text.lower():
         today = datetime.date.today().weekday()
         tonight = dayOfWeek(today) + ' Night'
-        tonightWeather = getWeather(profile, tonight)
+        tonightWeather = getWeather(profile, mic.db, tonight)
         sayWeather(mic, tonightWeather)
     # Monday's weather
     elif 'monday' in text.lower():
         if 'night' in text.lower():
-            weather = getExtendedWeather(profile, 'Monday Night')
+            weather = getExtendedWeather(profile, mic.db, 'Monday Night')
         else:
-            weather = getExtendedWeather(profile, 'Monday')
+            weather = getExtendedWeather(profile, mic.db, 'Monday')
         sayWeather(mic, weather)
     # Tuesday's weather
     elif 'tuesday' in text.lower():
         if 'night' in text.lower():
-            weather = getExtendedWeather(profile, 'Tuesday Night')
+            weather = getExtendedWeather(profile, mic.db, 'Tuesday Night')
         else:
-            weather = getExtendedWeather(profile, 'Tuesday')
+            weather = getExtendedWeather(profile, mic.db, 'Tuesday')
         sayWeather(mic, weather)
     # Wednesday's weather
     elif 'wednesday' in text.lower():
         if 'night' in text.lower():
-            weather = getExtendedWeather(profile, 'Wednesday Night')
+            weather = getExtendedWeather(profile, mic.db, 'Wednesday Night')
         else:
-            weather = getExtendedWeather(profile, 'Wednesday')
+            weather = getExtendedWeather(profile, mic.db, 'Wednesday')
         sayWeather(mic, weather)
     # Thursday's weather
     elif 'thursday' in text.lower():
         if 'night' in text.lower():
-            weather = getExtendedWeather(profile, 'Thursday Night')
+            weather = getExtendedWeather(profile, mic.db, 'Thursday Night')
         else:
-            weather = getExtendedWeather(profile, 'Thursday')
+            weather = getExtendedWeather(profile, mic.db, 'Thursday')
         sayWeather(mic, weather)
     # Friday's weather
     elif 'friday' in text.lower():
         if 'night' in text.lower():
-            weather = getExtendedWeather(profile, 'Friday Night')
+            weather = getExtendedWeather(profile, mic.db, 'Friday Night')
         else:
-            weather = getExtendedWeather(profile, 'Friday')
+            weather = getExtendedWeather(profile, mic.db, 'Friday')
         sayWeather(mic, weather)
     # Saturday's weather
     elif 'saturday' in text.lower():
         if 'night' in text.lower():
-            weather = getExtendedWeather(profile, 'Saturday Night')
+            weather = getExtendedWeather(profile, mic.db, 'Saturday Night')
         else:
-            weather = getExtendedWeather(profile, 'Saturday')
+            weather = getExtendedWeather(profile, mic.db, 'Saturday')
         sayWeather(mic, weather)
     # Sunday's weather
     elif 'sunday' in text.lower():
         if 'night' in text.lower():
-            weather = getExtendedWeather(profile, 'Sunday Night')
+            weather = getExtendedWeather(profile, mic.db, 'Sunday Night')
         else:
-            weather = getExtendedWeather(profile, 'Sunday')
+            weather = getExtendedWeather(profile, mic.db, 'Sunday')
         sayWeather(mic, weather)
     # If no key words then find the current weather
     else:
         f = urllib2.urlopen('http://api.wunderground.com/api/' +
                             str(profile['keys']["weatherUnderground"]) +
                             '/forecast/q/' + profile['location'] + '.json')
+        app_utils.updateAPITracker(mic.db, 'Weather Underground')
         json_string = f.read()
         parsed_json = json.loads(json_string)
 
