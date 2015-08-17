@@ -1,6 +1,6 @@
 # -*- coding: utf-8-*-
 """
-Movie module
+Know It All module
 
 Name:           knowItAll.py
 Description:    responds to questions pharsed several ways
