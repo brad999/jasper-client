@@ -15,7 +15,7 @@ Author:         Brad Ahlers (github - brad999)
 import re
 import datetime
 
-WORDS = ["WHO", "WHAT", "ARE", "YOU", "CAN", "DO"]
+WORDS = ["WHO", "WHAT", "ARE", "YOU"]
 PRIORITY = 1
 
 
@@ -34,12 +34,6 @@ def handle(text, mic, profile):
         mic.say('I', "My father and creator is Brad Ahlers. The greatest " +
                 "human being to ever live. My mother, by marriage is " +
                 "the beautiful Lauren Ahlers.")
-    # respond to questions about what Nikita can do
-    elif 'can' in text.lower() or 'function' in text.lower():
-        mic.say('I', "Some of my current functions include playing a movie " +
-                "on your TV through Plex, providing current news " +
-                "headlines, recommending a movie to watch, controlling " +
-                "your TV, and texting someone in your contacts.")
     # respond to questions about who/what Nikita is
     elif 'who' in text.lower() or 'what' in text.lower() \
          or 'yourself' in text.lower():
