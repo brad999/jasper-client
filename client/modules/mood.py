@@ -272,6 +272,6 @@ def isValid(text):
         Arguments:
         text -- user-input, typically transcribed speech
     """
-    return bool(re.search(r'\b(how are you today|how is it going|' +
+    return bool(re.search(r'\b(how is it going|' +
                           r'how are you|how\'s it going)\b',
                           text, re.IGNORECASE))
