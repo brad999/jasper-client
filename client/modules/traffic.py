@@ -7,6 +7,7 @@ Name:           traffic.py
 Description:    responds to questions about traffic and commute time
 
 Dependencies:   Bing Maps API (bingmapsportal.com)
+                Google Maps (sudo pip install -U googlemaps)
 
 Author:         Brad Ahlers (github - brad999)
 """
@@ -14,6 +15,8 @@ Author:         Brad Ahlers (github - brad999)
 import re
 import json
 import urllib2
+import googlemaps
+import datetime
 from client import app_utils
 
 WORDS = ["TRAFFIC", "CRASHES", "ACCIDENTS", "COMMUTE", "HOW", "LONG",
@@ -37,18 +40,11 @@ def getTraffic(profile, db):
 
 
 def getTravelTime(profile, db, origin, destination):
-    f = urllib2.urlopen('http://dev.virtualearth.net/REST/V1/Routes?wp.0=' +
-                        origin + '&wp.1=' + destination + '&key=' +
-                        profile['keys']["BingMaps"])
-    app_utils.updateAPITracker(db, 'Bing Maps')
-    json_string = f.read()
-    parsed_json = json.loads(json_string)
+    gmaps = googlemaps.Client(key=profile['keys']["GoogleMaps"])
+    now = datetime.datetime.now()
+    directions_result = gmaps.directions(origin, destination, departure_time=now)
 
-    travelTime = parsed_json['resourceSets'][0]['resources'][0]['travelDuration']
-    travelTime = str(int(travelTime)/60)+ ' minutes'
-
-    return travelTime
-
+    return directions_result[0]['legs'][0]['duration']['text']
 
 def handle(text, mic, profile):
     """
@@ -67,6 +63,7 @@ def handle(text, mic, profile):
         travelTime = getTravelTime(profile, mic.db,
                                    profile['locations']['home'],
                                    profile['locations']['work'])
+        travelTime = travelTime.replace('mins', 'minutes')
 
         if travelTime:
             mic.say('I', "Travel time to work is " + travelTime)
