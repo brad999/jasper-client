@@ -43,8 +43,41 @@ def getTravelTime(profile, db, origin, destination):
     gmaps = googlemaps.Client(key=profile['keys']["GoogleMaps"])
     now = datetime.datetime.now()
     directions_result = gmaps.directions(origin, destination, departure_time=now)
+    travelTime = directions_result[0]['legs'][0]['duration']['text']
+    travelTime = travelTime.replace('mins', 'minutes')
+    return travelTime
 
-    return directions_result[0]['legs'][0]['duration']['text']
+
+def checkState(location):
+    states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California",
+              "Colorado", "Connecticut", "Delaware", "Florida",
+              "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
+              "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
+              "Maryland", "Massachusetts", "Michigan", "Minnesota",
+              "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+              "New Hampshire", "New Jersey", "New Mexico", "New York",
+              "North Carolina", "North Dakota", "Ohio", "Oklahoma",
+              "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+              "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+              "Virginia", "Washington", "West Virginia", "Wisconsin",
+              "Wyoming"]
+    if any(x.lower() in location.lower() for x in states):
+        return True
+    else:
+        return False
+
+def getCoordinates(profile, db, location):
+    gmaps = googlemaps.Client(key=profile['keys']["GoogleMaps"])
+    # check for state, if no state assume Michigan
+    if not checkState(location):
+        location = location + " michigan"
+    print location
+    geocode_result = gmaps.geocode(location)
+    lat = geocode_result[0]['geometry']['location']['lat']
+    lng = geocode_result[0]['geometry']['location']['lng']
+    coordinates = str(lat) + ', ' + str(lng)
+    return coordinates
+
 
 def handle(text, mic, profile):
     """
@@ -58,23 +91,42 @@ def handle(text, mic, profile):
         profile -- contains information related to the user
     """
 
-    if 'how long does it take to get to work' in text.lower() \
-       or 'travel time' in text.lower():
+    if 'traffic' in text.lower() or 'accident' in text.lower() or\
+       'crash' in text.lower():
+       incidences = ' '.join(getTraffic(profile, mic.db))
+       if incidences:
+           mic.say('I', incidences)
+       else:
+           mic.say('A', "Roads are clear.")
+    elif 'how long does it take to get to work' in text.lower() \
+        or 'travel time' in text.lower():
         travelTime = getTravelTime(profile, mic.db,
                                    profile['locations']['home'],
                                    profile['locations']['work'])
-        travelTime = travelTime.replace('mins', 'minutes')
 
         if travelTime:
             mic.say('I', "Travel time to work is " + travelTime)
         else:
             mic.say('A', "I am currently unable to retrieve this information")
     else:
-        incidences = ' '.join(getTraffic(profile, mic.db))
-        if incidences:
-            mic.say('I', incidences)
-        else:
-            mic.say('A', "Roads are clear.")
+        intent = app_utils.determineIntent(profile, text)
+        # Use intent if found
+        if intent:
+            # check intent to get destination
+            if json.loads(json.dumps(intent))['intent'] == 'travel_time':
+                witSuggestion = (json.loads(json.dumps(intent))['entities']
+                                 ['location'][0]['suggested'])
+                if witSuggestion:
+                    location = (json.loads(json.dumps(intent))['entities']
+                             ['location'][0]['value'])
+                    coordinates = getCoordinates(profile, mic.db, location)
+                    travelTime = getTravelTime(profile, mic.db,
+                                               profile['locations']['home'],
+                                               coordinates)
+                    if travelTime:
+                        mic.say('I', "Travel time to " + location + " is " + travelTime + ".")
+                    else:
+                        mic.say('A', "I am currently unable to retrieve this information")
 
 
 def isValid(text):
@@ -85,5 +137,6 @@ def isValid(text):
         text -- user-input, typically transcribed speech
     """
     return bool(re.search(r'\b(traffic|crashes|accidents|commute|' +
-                          r'how long does it take to get to work)\b',
+                          r'how long does it take to get to work|' +
+                          r'how long does it)\b',
                           text, re.IGNORECASE))
