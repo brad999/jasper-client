@@ -97,9 +97,8 @@ def handle(text, mic, profile):
        if incidences:
            mic.say('I', incidences)
        else:
-           mic.say('A', "Roads are clear.")
-    elif 'how long does it take to get to work' in text.lower() \
-        or 'travel time' in text.lower():
+           mic.say('I', "Roads are clear.")
+    elif 'work' in text.lower():
         travelTime = getTravelTime(profile, mic.db,
                                    profile['locations']['home'],
                                    profile['locations']['work'])
@@ -138,5 +137,5 @@ def isValid(text):
     """
     return bool(re.search(r'\b(traffic|crashes|accidents|commute|' +
                           r'how long does it take to get to work|' +
-                          r'how long does it)\b',
+                          r'how long does it|travel time)\b',
                           text, re.IGNORECASE))
