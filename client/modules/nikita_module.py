@@ -19,6 +19,17 @@ WORDS = ["WHO", "WHAT", "ARE", "YOU"]
 PRIORITY = 1
 
 
+def getLastSpeech(db):
+    cur = db.cursor()
+    SQL = "SELECT speech_text \
+           FROM transcript \
+           ORDER BY create_timestamp desc LIMIT 1;"
+    cur.execute(SQL)
+
+    LastSpeech = cur.fetchall()
+    return LastSpeech
+
+
 def handle(text, mic, profile):
     """
         Responds to user-input, typically speech text.
@@ -35,7 +46,7 @@ def handle(text, mic, profile):
                 "human being to ever live. My mother, by marriage is " +
                 "the beautiful Lauren Ahlers.")
     # respond to questions about who/what Nikita is
-    elif 'who' in text.lower() or 'what' in text.lower() \
+    elif 'who' in text.lower() or 'what are' in text.lower() \
          or 'yourself' in text.lower():
         mic.say('I', "My name is Nikita. I am a personalized assistance " +
                 "developed to provide simple and complete control over " +
@@ -53,7 +64,11 @@ def handle(text, mic, profile):
                     "on April 6th, twenty fifteen.")
     # respond to questions about birthday
     elif 'birth' in text.lower() or 'born' in text.lower():
-        mic.say("I", "I was born on April 6th, twenty fifteen.")
+        mic.say('I', "I was born on April 6th, twenty fifteen.")
+    # respond to questions about last actions
+    elif 'last' in text.lower() or 'did you' in text.lower():
+        mic.say('A', "The last thing I said was, " +
+                getLastSpeech(mic.db)[0][0])
 
 
 def isValid(text):
