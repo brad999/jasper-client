@@ -12,7 +12,9 @@ class Conversation(object):
         self.mic = mic
         self.profile = profile
         self.brain = Brain(mic, profile)
-        self.notifier = Notifier(profile)
+        # Initialize notifier if server
+        if self.profile['server'] == 'Y':
+            self.notifier = Notifier(profile)
 
     def handleForever(self):
         """
@@ -21,10 +23,12 @@ class Conversation(object):
         self._logger.info("Starting to handle conversation with keyword '%s'.",
                           self.persona)
         while True:
-            # Print notifications until empty
-            notifications = self.notifier.getAllNotifications()
-            for notif in notifications:
-                self._logger.info("Received notification: '%s'", str(notif))
+            # If server, handle passive modules (scheduled backgroud tasks)
+            if self.profile['server'] == 'Y':
+                # Print notifications until empty
+                notifications = self.notifier.getAllNotifications()
+                for notif in notifications:
+                    self._logger.info("Received notification: '%s'", str(notif))
 
             self._logger.debug("Started listening for keyword '%s'",
                                self.persona)
